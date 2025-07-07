@@ -4,8 +4,9 @@ import './App.css'
 import LandingPage from './pages/landing-page/LandingPage.jsx' 
 import LoginPage from "./pages/login-page/LoginPage.jsx";
 import RegistrationPage from "./Registration_page/Registration_page.jsx";
-import StudentDashboard from './pages/dashboard/StudentDashboard.jsx';
+
 import StudentLayout from './layout/StudentLayout.jsx';
+import StudentDashboard from './pages/dashboard/StudentDashboard.jsx';
 import AllCourses from './pages/my-courses/AllCourses.jsx';
 import AllCourseDetails from './pages/my-courses/AllCourseDetails.jsx';
 import LearningGuides from './pages/my-courses/LearningGuides.jsx';
@@ -13,6 +14,10 @@ import StudentProfile from './pages/profile-page/StudentProfile.jsx';
 import AssignmentsPanel from './pages/assignment-page/AssignmentPanel.jsx';
 import AssignmentDetails from './pages/assignment-page/AssignmentDetails.jsx';
 
+import GuideLayout from './layout/GuideLayout.jsx';
+import GuideDashboard from './pages-guide/dashboard/GuideDashboard.jsx';
+import StudentList from './pages-guide/student-list/StudentList.jsx';
+import StudentProfilePage from './pages-guide/student-list/StudentProfilePage.jsx';
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
   const assignments = [
@@ -69,6 +74,12 @@ const App = () => {
             <Route path='profile' element={<StudentProfile/>}/>
             <Route path="assignments" element={<AssignmentsPanel assignments={assignments} />} />
             <Route path="assignments/:id" element={<AssignmentDetails assignments={assignments} />} />
+          </Route>
+
+          <Route path='/guide' element={<GuideLayout />}>
+            <Route path='dashboard' element={<GuideDashboard />} />
+            <Route path="students" element={<StudentList />} />
+            <Route path="students/:id" element={<StudentProfile />} />
           </Route>
         </Routes>
       </div>
