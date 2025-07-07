@@ -23,6 +23,7 @@ const data = {
     avatar: "", // or use a valid image URL
     institution: "K. J. Somaiya School Of Engineering",
     enrollmentId: "1620231407",
+    url: "/student/profile", // URL to the user profile
   },
   navMain: [
     {

@@ -18,6 +18,9 @@ import GuideLayout from './layout/GuideLayout.jsx';
 import GuideDashboard from './pages-guide/dashboard/GuideDashboard.jsx';
 import StudentList from './pages-guide/student-list/StudentList.jsx';
 import StudentProfilePage from './pages-guide/student-list/StudentProfilePage.jsx';
+import GuideAssignmentList from './pages-guide/assignment-page/GuideAssignmentList.jsx';
+import GuideAssignmentDetails from './pages-guide/assignment-page/GuideAssignmentDetails.jsx';
+
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
   const assignments = [
@@ -79,7 +82,10 @@ const App = () => {
           <Route path='/guide' element={<GuideLayout />}>
             <Route path='dashboard' element={<GuideDashboard />} />
             <Route path="students" element={<StudentList />} />
-            <Route path="students/:id" element={<StudentProfile />} />
+            <Route path="students/:id" element={<StudentProfilePage />} />
+            <Route path="assignments" element={<GuideAssignmentList />} />
+            <Route path="assignments/:id" element={<GuideAssignmentDetails />} />
+
           </Route>
         </Routes>
       </div>

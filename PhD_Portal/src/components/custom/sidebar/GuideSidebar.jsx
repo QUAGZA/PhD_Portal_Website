@@ -6,6 +6,7 @@ import {
   BookText,
   Settings,
   NotebookPen,
+  CalendarDays,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -24,6 +25,7 @@ const data = {
     avatar: "", // or use a valid image URL
     institution: "K. J. Somaiya School Of Engineering",
     enrollmentId: "1620231407",
+    url: "/guide/profile", // URL to the user profile
   },
   navMain: [
     {
@@ -38,14 +40,19 @@ const data = {
       icon: Users,
     },
     {
-      title: "Courses",
-      url: "/guide/courses",
-      icon: BrainCog,
+      title: "Schedule",
+      url: "/guide/schedule",
+      icon: CalendarDays,
     },
     {
       title: "Assignments",
       url: "/guide/assignments",
       icon: NotebookPen,
+    },
+    {
+      title: "Courses",
+      url: "/guide/courses",
+      icon: BrainCog,
     },
     {
       title: "Announcements",

@@ -7,7 +7,9 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { CalendarDays, Edit } from "lucide-react"
-
+import { SquareArrowOutUpRight } from "lucide-react"
+import { Link } from "react-router-dom"
+import ScheduleCard from "./ScheduleCard"
 const students = [
   { name: "Student 1 Name", progress: 80, attendance: 70, batch: "B3" },
   { name: "Student 2 Name", progress: 80, attendance: 70, batch: "B3" },
@@ -61,7 +63,12 @@ export default function GuideDashboard() {
         {/* Student List */}
         <Card className="max-h-[300px] overflow-auto">
           <CardHeader>
-            <CardTitle className="text-lg">Student List</CardTitle>
+            <CardTitle className="text-lg flex justify-between items-center">Student List
+              <Link to="/guide/students" className="text-muted-foreground hover:text-black  ">
+              <SquareArrowOutUpRight className="h-4 w-4" />
+              </Link>
+            </CardTitle>
+            
           </CardHeader>
           <CardContent className="space-y-4">
             {students.map((student, index) => (
@@ -89,7 +96,11 @@ export default function GuideDashboard() {
         {/* Assignments */}
         <Card className="lg:col-span-2 max-h-[300px] overflow-auto">
           <CardHeader>
-            <CardTitle className="text-lg">Assignments</CardTitle>
+            <CardTitle className="text-lg flex justify-between items-center">Assignments
+              <Link to="/guide/assignments" className="text-muted-foreground hover:text-black  ">
+              <SquareArrowOutUpRight className="h-4 w-4" />
+              </Link>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {assignments.map((a, idx) => (
@@ -118,34 +129,7 @@ export default function GuideDashboard() {
       {/* My Schedule & Announcements */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Schedule */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex justify-between items-center">
-            <CardTitle className="text-lg">My Schedule</CardTitle>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CalendarDays className="h-4 w-4" />
-              Jun 15 - Jun 21, 2025
-            </div>
-          </CardHeader>
-          <CardContent className="grid grid-cols-7 text-center gap-1">
-            {schedule.map((d, i) => (
-              <div
-                key={i}
-                className="border rounded p-1 h-[90px] flex flex-col justify-between items-center text-xs"
-              >
-                <p className="font-medium">{d.day}</p>
-                <p>{d.date}</p>
-                {d.label && (
-                  <div
-                    className={`text-[10px] px-1 py-0.5 rounded ${d.color || "bg-gray-200"} text-black`}
-                  >
-                    {d.label}
-                  </div>
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
+            <ScheduleCard />
         {/* Announcements */}
         <Card>
           <CardHeader>
