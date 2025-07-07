@@ -20,7 +20,7 @@ import StudentList from './pages-guide/student-list/StudentList.jsx';
 import StudentProfilePage from './pages-guide/student-list/StudentProfilePage.jsx';
 import GuideAssignmentList from './pages-guide/assignment-page/GuideAssignmentList.jsx';
 import GuideAssignmentDetails from './pages-guide/assignment-page/GuideAssignmentDetails.jsx';
-
+import Schedule from './pages-guide/schedule-page/Schedule.jsx';
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
   const assignments = [
@@ -85,7 +85,7 @@ const App = () => {
             <Route path="students/:id" element={<StudentProfilePage />} />
             <Route path="assignments" element={<GuideAssignmentList />} />
             <Route path="assignments/:id" element={<GuideAssignmentDetails />} />
-
+            <Route path="schedule" element={<Schedule />} />
           </Route>
         </Routes>
       </div>
