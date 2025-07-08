@@ -1,0 +1,69 @@
+{
+  "profile": {
+    "name": "Mr. Random",
+    "avatar": "",
+    "initials": "SV",
+    "institution": "K. J. Somaiya School Of Engineering",
+    "course": "Second Year B.Tech Computer Engineering",
+    "enrollmentId": "1600",
+    "dob": "24/06/2005",
+    "phone": "1234567890",
+    "email": "Random@somaiya.edu"
+  },
+  "personalDetails": {
+    "fatherName": "something",
+    "motherName": "something",
+    "gender": "Male",
+    "maritalStatus": "Unmarried",
+    "aadhar": "XXXXXXXX1234",
+    "railwayStation": "Vidyavihar Station",
+    "residentialAddress": [
+      "Flat No. , Building Name",
+      "Land Mark, Street Name",
+      "Area, State, Pin Code - 400077"
+    ],
+    "permanentAddress": [
+      "Flat No., Building Name",
+      "Land Mark, Street Name",
+      "Area, State, Pin Code - 4000"
+    ],
+    "contacts": {
+      "mobile": "1234567890",
+      "alternateMobile": "1234567890",
+      "primaryEmail": "abc@gmail.com",
+      "alternateEmail": "abc@gmail.com"
+    }
+  },
+  "educationalDetails": {
+    "undergraduate": {
+      "degree": "Bachelors Of Technology (B. Tech)",
+      "institute": "K. J. Somaiya School Of Engineering",
+      "university": "Somaiya Vidyavihar University",
+      "yearOfPassing": "2021"
+    },
+    "postgraduate": {
+      "degree": "Masters Of Technology (M. Tech)",
+      "institute": "K. J. Somaiya School Of Engineering",
+      "university": "Somaiya Vidyavihar University",
+      "yearOfPassing": "2023"
+    },
+    "employment": {
+      "designation": "Full Stack Web Developer",
+      "organization": "K. J. Somaiya School Of Engineering",
+      "duration": "10mo 20 d (05/24 to 01/25)"
+    }
+  },
+  "programDetails": {
+    "department": "Computer Engineering",
+    "admissionYear": "2022",
+    "semester": "4th Semester",
+    "guideName": "Dr. Rajesh Kumar",
+    "guideEmail": "rajesh.kumar@somaiya.edu",
+    "status": "Undergoing",
+    "domain": "Artificial Intelligence and Machine Learning",
+    "topic": "Deep Learning Applications in Computer Vision",
+    "researchDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
+    "bonds": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...",
+    "scholarship": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit..."
+  }
+}

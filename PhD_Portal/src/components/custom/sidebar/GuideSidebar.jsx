@@ -1,10 +1,12 @@
 import {
+  Users,
   BrainCog,
   House,
   Megaphone,
   BookText,
   Settings,
   NotebookPen,
+  CalendarDays,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -23,46 +25,56 @@ const data = {
     avatar: "", // or use a valid image URL
     institution: "K. J. Somaiya School Of Engineering",
     enrollmentId: "1620231407",
-    url: "/student/profile", // URL to the user profile
+    url: "/guide/profile", // URL to the user profile
   },
   navMain: [
     {
       title: "Dashboard",
-      url: "/student/dashboard",
+      url: "/guide/dashboard",
       icon: House ,
       isActive: true,
     },
     {
-      title: "Courses",
-      url: "/student/courses",
-      icon: BrainCog,
+      title: "Students",
+      url: "/guide/students",
+      icon: Users,
+    },
+    {
+      title: "Schedule",
+      url: "/guide/schedule",
+      icon: CalendarDays,
     },
     {
       title: "Assignments",
-      url: "/student/assignments",
+      url: "/guide/assignments",
       icon: NotebookPen,
     },
     {
+      title: "Courses",
+      url: "/guide/courses",
+      icon: BrainCog,
+    },
+    {
       title: "Announcements",
-      url: "/student/announcements",
+      url: "/guide/announcements",
       icon: Megaphone,
     },
     {
       title: "Resources",
-      url: "/student/resources",
+      url: "/guide/resources",
       icon: BookText,
   
     },
     {
       title: "Settings",
-      url: "/student/settings",
+      url: "/guide/settings",
       icon: Settings,
     },
   ]
 };
 
 
-export default function StudentSidebar(props) {
+export default function GuideSidebar(props) {
   return (
     <Sidebar collapsible="icon" {...props} >
       <SidebarHeader>
