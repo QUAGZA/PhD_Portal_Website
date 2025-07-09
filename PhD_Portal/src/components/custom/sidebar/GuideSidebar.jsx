@@ -7,6 +7,7 @@ import {
   Settings,
   NotebookPen,
   CalendarDays,
+  MessageSquareText,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -48,6 +49,11 @@ const data = {
       title: "Assignments",
       url: "/guide/assignments",
       icon: NotebookPen,
+    },
+    {
+      title: "Forum",
+      url: "/guide/forum",
+      icon: MessageSquareText,
     },
     {
       title: "Courses",

@@ -5,7 +5,7 @@ import sequelize from '../config/db.js'; // your db connection
 import PersonalDetails from './personalDetails.js';
 import AcademicQualification from './AcademicQualifications.js';
 import EmploymentRecord from './EmploymentRecords.js';
-
+import Message from './Message.js';
 
 // Export all models and sequelize instance
 export  {
@@ -14,4 +14,5 @@ export  {
   PersonalDetails,
   AcademicQualification,
   EmploymentRecord,
+  Message,
 };
