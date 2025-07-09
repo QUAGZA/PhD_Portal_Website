@@ -14,7 +14,7 @@ export default function StudentProfile() {
   const { profile, personalDetails, educationalDetails, programDetails } = studentData
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-4">
       <div className="flex">
         <div className="flex-1 space-y-4 lg:pr-16">
           <h1 className="text-2xl font-semibold text-gray-800 mb-2">
