@@ -22,6 +22,7 @@ import GuideAssignmentList from './pages-guide/assignment-page/GuideAssignmentLi
 import GuideAssignmentDetails from './pages-guide/assignment-page/GuideAssignmentDetails.jsx';
 import Schedule from './pages-guide/schedule-page/Schedule.jsx';
 import GuideForum from './pages-guide/forum-page/GuideForum.jsx';
+import GuideProfile from './pages-guide/profile-page/GuideProfile.jsx';
 
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
@@ -89,6 +90,7 @@ const App = () => {
             <Route path="assignments/:id" element={<GuideAssignmentDetails />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="forum" element={<GuideForum />} />
+            <Route path="profile" element={<GuideProfile />} />
           </Route>
         </Routes>
       </div>

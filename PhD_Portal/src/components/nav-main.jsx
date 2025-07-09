@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocation } from "react-router-dom"; // for current path
+import { NavLink, useLocation } from "react-router-dom"; // for current path
 import {
   SidebarGroup,
   SidebarMenu,
@@ -28,8 +28,8 @@ export function NavMain({ items }) {
                     : "hover:text-[#000000] hover:bg-muted hover:bg-[#f0f0f0]/50"
                 }`}
               >
-                <a
-                  href={item.url}
+                <NavLink
+                  to={item.url}
                   className="flex items-center gap-2 px-2 py-2 transition-colors rounded-md"
                 >
                   <item.icon
@@ -38,7 +38,7 @@ export function NavMain({ items }) {
                     }`}
                   />
                   <span>{item.title}</span>
-                </a>
+                </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );
