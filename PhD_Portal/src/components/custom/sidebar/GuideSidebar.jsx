@@ -60,11 +60,11 @@ const data = {
       url: "/guide/courses",
       icon: BrainCog,
     },
-    {
-      title: "Announcements",
-      url: "/guide/announcements",
-      icon: Megaphone,
-    },
+    // {
+    //   title: "Announcements",
+    //   url: "/guide/announcements",
+    //   icon: Megaphone,
+    // },
     {
       title: "Resources",
       url: "/guide/resources",
