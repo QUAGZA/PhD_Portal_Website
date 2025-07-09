@@ -1,7 +1,7 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import './App.css'
-import LandingPage from './pages/landing-page/LandingPage.jsx' 
+import LandingPage from './pages/landing-page/LandingPage.jsx'
 import LoginPage from "./pages/login-page/LoginPage.jsx";
 import RegistrationPage from "./Registration_page/Registration_page.jsx";
 
@@ -23,45 +23,48 @@ import GuideAssignmentDetails from './pages-guide/assignment-page/GuideAssignmen
 import Schedule from './pages-guide/schedule-page/Schedule.jsx';
 import GuideForum from './pages-guide/forum-page/GuideForum.jsx';
 import GuideProfile from './pages-guide/profile-page/GuideProfile.jsx';
+import FacultyLayout from './layout/FacultyLayout.jsx';
+import FacultyDashboard from './pages-faculty-coordinator/dashaboard/FacultyDashboard.jsx';
+import FacultyProfile from './pages-faculty-coordinator/profile-page/FacultyProfile.jsx';
 
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
   const assignments = [
-  {
-    id: "1",
-    title: "Experiment 1 - Process Scheduling",
-    status: "Pending",
-    deadline: "31/05/2025",
-    statusDescription: "Not yet submitted",
-    timeRemaining: "3 days left",
-    lastModified: "",
-    grade: "Not Graded",
-    comments: "-",
-    attachments: [],
-    submission: { name: "-", url: "#" },
-  },
-  {
-    id: "2",
-    title: "Experiment 2 - Disk Scheduling",
-    status: "Submitted",
-    deadline: "31/05/2025, 11:59 pm",
-    statusDescription: "Submitted for Grading",
-    timeRemaining: "Assignment was Submitted 2 hours early",
-    lastModified: "31/05/2025, 09:59 pm",
-    grade: "Not Graded",
-    comments: "Remarks From Faculty",
-    attachments: [
-      { name: "Exp2_WriteUp.docx", url: "#" },
-      { name: "ReferenceMaterial.pdf", url: "#" },
-    ],
-    submission: { name: "Experiment2.pdf", url: "#" },
-  },
-  // Add more assignments...
-]
-  return(
+    {
+      id: "1",
+      title: "Experiment 1 - Process Scheduling",
+      status: "Pending",
+      deadline: "31/05/2025",
+      statusDescription: "Not yet submitted",
+      timeRemaining: "3 days left",
+      lastModified: "",
+      grade: "Not Graded",
+      comments: "-",
+      attachments: [],
+      submission: { name: "-", url: "#" },
+    },
+    {
+      id: "2",
+      title: "Experiment 2 - Disk Scheduling",
+      status: "Submitted",
+      deadline: "31/05/2025, 11:59 pm",
+      statusDescription: "Submitted for Grading",
+      timeRemaining: "Assignment was Submitted 2 hours early",
+      lastModified: "31/05/2025, 09:59 pm",
+      grade: "Not Graded",
+      comments: "Remarks From Faculty",
+      attachments: [
+        { name: "Exp2_WriteUp.docx", url: "#" },
+        { name: "ReferenceMaterial.pdf", url: "#" },
+      ],
+      submission: { name: "Experiment2.pdf", url: "#" },
+    },
+    // Add more assignments...
+  ]
+  return (
     <Router>
       <div className="relative h-screen w-screen overflow-auto scroll-smooth font-[Marcellus]">
-      
+
         <Routes>
           {/* Landing page route */}
           <Route path="/" element={
@@ -74,10 +77,10 @@ const App = () => {
 
           <Route path='/student' element={<StudentLayout />}>
             <Route path='dashboard' element={<StudentDashboard />} />
-            <Route path='courses' element={<AllCourses/>}/>
-            <Route path='courses/details' element={<AllCourseDetails/>}/>
-            <Route path='courses/details/learning-guides' element={<LearningGuides/>}/>
-            <Route path='profile' element={<StudentProfile/>}/>
+            <Route path='courses' element={<AllCourses />} />
+            <Route path='courses/details' element={<AllCourseDetails />} />
+            <Route path='courses/details/learning-guides' element={<LearningGuides />} />
+            <Route path='profile' element={<StudentProfile />} />
             <Route path="assignments" element={<AssignmentsPanel assignments={assignments} />} />
             <Route path="assignments/:id" element={<AssignmentDetails assignments={assignments} />} />
           </Route>
@@ -92,6 +95,12 @@ const App = () => {
             <Route path="forum" element={<GuideForum />} />
             <Route path="profile" element={<GuideProfile />} />
           </Route>
+
+          <Route path='/faculty-coordinator' element={<FacultyLayout />}>
+            <Route path='dashboard' element={<FacultyDashboard/>}/>
+            <Route path='profile' element={<FacultyProfile/>}/>
+          </Route>
+
         </Routes>
       </div>
     </Router>
