@@ -2,7 +2,7 @@
 import { Pie, PieChart, Cell } from "recharts";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-
+import useRequireAuth from "../../hooks/useRequireAuth";
 
 const progressData = [
   { name: "Completed", value: 75 },
@@ -40,6 +40,7 @@ const modules = [
 
 const AllCourseDetails = () => {
 
+  useRequireAuth(["student", "admin"]);
   const navigate=useNavigate();
 
   return (

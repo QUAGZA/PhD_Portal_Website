@@ -12,10 +12,12 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
+  SidebarFooter,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { SidebarTrigger } from "../../ui/sidebar";
-
+import LogoutButton from "./LogoutButton";
 // Sample data
 const data = {
   user: {
@@ -63,6 +65,7 @@ const data = {
 
 
 export default function StudentSidebar(props) {
+  const { state } = useSidebar();
   return (
     <Sidebar collapsible="icon" {...props} >
       <SidebarHeader>
@@ -70,8 +73,11 @@ export default function StudentSidebar(props) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain}/>
-      <SidebarTrigger className="absolute right-2 bottom-2" />
+      <SidebarTrigger className={`absolute cursor-pointer bottom-16 ${state === "collapsed" ? "left-1/2 transform -translate-x-1/2" : "right-2"}`} />
       </SidebarContent>
+      <SidebarFooter>
+        <LogoutButton />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

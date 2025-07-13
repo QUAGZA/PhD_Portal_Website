@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom"
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card"
-
+import useRequireAuth from "../../hooks/useRequireAuth"
 const dummyStudents = {
   stu001: {
     name: "Mr. Swayam Sanjay Vernekar",
@@ -34,6 +34,8 @@ const dummyStudents = {
 }
 
 export default function StudentProfilePage() {
+  useRequireAuth(["guide", "admin"]);
+  
   const { id } = useParams()
   const student = dummyStudents[id]
 

@@ -4,10 +4,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
-import { SendHorizonal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
+// import { Input } from "@/components/ui/input";
+// import { SendHorizonal } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+import useRequireAuth from "../../hooks/useRequireAuth";
 const guideProfile = {
   name: "Educator’s Name",
   title: "Guide",
@@ -33,6 +33,7 @@ const guideProfile = {
 };
 
 export default function GuideProfile() {
+  useRequireAuth(["guide", "admin"]);
   return (
     <div className="p-4 space-y-4">
       {/* Header */}

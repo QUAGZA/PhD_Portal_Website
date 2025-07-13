@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import cool1 from "../../assets/cool-bg/cool1.png";
+import useRequireAuth from "../../hooks/useRequireAuth";
 
 const courses = [
   {
@@ -11,6 +12,7 @@ const courses = [
 ];
 
 const AllCourses = () => {
+  useRequireAuth(["student", "admin"]);
   const navigate = useNavigate();
 
   return (

@@ -4,11 +4,15 @@ import { Input } from "@/components/ui/input";
 import { SendHorizonal } from "lucide-react";
 import clsx from "clsx";
 import io from "socket.io-client";
+import useRequireAuth from "../../hooks/useRequireAuth";
 
 const socket = io("http://localhost:5000"); // or your deployed endpoint
 const mySocketId = crypto.randomUUID(); // unique per tab
 
 export default function GuideForum() {
+
+  useRequireAuth(["guide", "admin"]); 
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);

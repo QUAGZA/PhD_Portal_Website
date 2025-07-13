@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { format, startOfWeek, addDays, subWeeks, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth } from "date-fns";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import useRequireAuth from "../../hooks/useRequireAuth";
 
 const getCurrentWeekDates = (date) => {
   const start = startOfWeek(date, { weekStartsOn: 0 });
@@ -25,6 +26,8 @@ const colorClasses = [
 ];
 
 export default function Schedule() {
+  useRequireAuth(["guide", "admin"]);
+
   const [mode, setMode] = useState("week");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);

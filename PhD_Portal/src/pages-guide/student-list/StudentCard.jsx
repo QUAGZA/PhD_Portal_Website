@@ -1,7 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { use } from "react"
 import { Link } from "react-router-dom"
+import useRequireAuth from "../../hooks/useRequireAuth";
 
 export default function StudentCard({ student }) {
+
+  useRequireAuth(["guide", "admin"]);
+  
   return (
     <Link to={`/guide/students/${student.id}`}>
       <Card className="p-4 mb-2 hover:shadow-md transition">

@@ -2,8 +2,11 @@ import { useSelector } from "react-redux";
 import CourseCarousel from "../../components/custom/carousel/CourseCarousel";
 import AssignmentCarousel from "@/components/custom/carousel/AssignmentCarousel";
 import ProgressChart from "../../components/custom/charts/ProgressChart";
-
+import useRequireAuth from "../../hooks/useRequireAuth";
 export default function StudentDashboard() {
+
+  useRequireAuth(["student", "admin"]); 
+  
   const {
     studentInfo,
     courses,

@@ -1,6 +1,7 @@
 import GuideAssignmentCard from "./GuideAssignmentCard.jsx"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import useRequireAuth from "../../hooks/useRequireAuth.js"
 
 const guideAssignments = [
   {
@@ -23,6 +24,9 @@ const guideAssignments = [
 ]
 
 export default function GuideAssignmentList() {
+  
+  useRequireAuth(["guide", "admin"]);
+
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 font-[Marcellus]">
       <div className="md:col-span-3">

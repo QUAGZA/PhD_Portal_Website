@@ -7,7 +7,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { format, addWeeks, subWeeks, startOfWeek, addDays } from "date-fns";
-
+import useRequireAuth from "../../hooks/useRequireAuth";
 // Generate schedule data for 7 days from startDate (Sunday to Saturday)
 const generateWeekData = (startDate) => {
     const week = [];
@@ -31,6 +31,7 @@ const generateWeekData = (startDate) => {
 };
 
 export default function ScheduleCard() {
+    useRequireAuth(["faculty-coordinator", "admin"]);
     // Start from the current week's Sunday
     const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 0 }));
 

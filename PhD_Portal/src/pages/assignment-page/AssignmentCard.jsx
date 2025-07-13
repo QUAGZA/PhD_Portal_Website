@@ -2,9 +2,10 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useNavigate } from "react-router-dom"
-
+import useRequireAuth from "../../hooks/useRequireAuth"
 export default function AssignmentCard({ assignment }) {
   const navigate = useNavigate()
+  useRequireAuth(["student", "admin"]);
 
   return (
     <Card

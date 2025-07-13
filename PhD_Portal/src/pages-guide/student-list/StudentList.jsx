@@ -1,6 +1,7 @@
 import StudentCard from "./StudentCard.jsx"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import useRequireAuth from "../../hooks/useRequireAuth.js"
 
 const students = [
   {
@@ -27,6 +28,7 @@ const students = [
 ]
 
 export default function StudentList() {
+  useRequireAuth(["guide", "admin"]);
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 font-[Marcellus]">
       {/* Student Cards */}

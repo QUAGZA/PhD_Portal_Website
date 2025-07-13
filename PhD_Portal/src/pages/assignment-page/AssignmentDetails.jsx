@@ -2,8 +2,10 @@ import { useParams } from "react-router-dom"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-
+import useRequireAuth from "../../hooks/useRequireAuth"
+import { use } from "react"
 export default function AssignmentDetails({ assignments }) {
+  useRequireAuth(["student", "admin"]);
   const { id } = useParams()
   const assignment = assignments.find((a) => a.id === id)
 
