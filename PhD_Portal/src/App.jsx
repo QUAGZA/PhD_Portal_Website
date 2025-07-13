@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import './App.css'
+import PrivateRoute from "./components/custom/PrivateRouter/PrivateRoute.jsx";
 import LandingPage from './pages/landing-page/LandingPage.jsx'
 import LoginPage from "./pages/login-page/LoginPage.jsx";
 import RegistrationPage from "./Registration_page/Registration_page.jsx";
@@ -75,30 +76,36 @@ const App = () => {
           />
           <Route path='/register' element={<RegistrationPage />} />
 
-          <Route path='/student' element={<StudentLayout />}>
-            <Route path='dashboard' element={<StudentDashboard />} />
-            <Route path='courses' element={<AllCourses />} />
-            <Route path='courses/details' element={<AllCourseDetails />} />
-            <Route path='courses/details/learning-guides' element={<LearningGuides />} />
-            <Route path='profile' element={<StudentProfile />} />
-            <Route path="assignments" element={<AssignmentsPanel assignments={assignments} />} />
-            <Route path="assignments/:id" element={<AssignmentDetails assignments={assignments} />} />
+          <Route element={<PrivateRoute requiredRoles={"student"} />}>
+            <Route path='/student' element={<StudentLayout />}>
+              <Route path='dashboard' element={<StudentDashboard />} />
+              <Route path='courses' element={<AllCourses />} />
+              <Route path='courses/details' element={<AllCourseDetails />} />
+              <Route path='courses/details/learning-guides' element={<LearningGuides />} />
+              <Route path='profile' element={<StudentProfile />} />
+              <Route path="assignments" element={<AssignmentsPanel assignments={assignments} />} />
+              <Route path="assignments/:id" element={<AssignmentDetails assignments={assignments} />} />
+            </Route>
           </Route>
 
-          <Route path='/guide' element={<GuideLayout />}>
-            <Route path='dashboard' element={<GuideDashboard />} />
-            <Route path="students" element={<StudentList />} />
-            <Route path="students/:id" element={<StudentProfilePage />} />
-            <Route path="assignments" element={<GuideAssignmentList />} />
-            <Route path="assignments/:id" element={<GuideAssignmentDetails />} />
-            <Route path="schedule" element={<Schedule />} />
-            <Route path="forum" element={<GuideForum />} />
-            <Route path="profile" element={<GuideProfile />} />
+          <Route element={<PrivateRoute requiredRoles={"guide"} />}>
+            <Route path='/guide' element={<GuideLayout />}>
+              <Route path='dashboard' element={<GuideDashboard />} />
+              <Route path="students" element={<StudentList />} />
+              <Route path="students/:id" element={<StudentProfilePage />} />
+              <Route path="assignments" element={<GuideAssignmentList />} />
+              <Route path="assignments/:id" element={<GuideAssignmentDetails />} />
+              <Route path="schedule" element={<Schedule />} />
+              <Route path="forum" element={<GuideForum />} />
+              <Route path="profile" element={<GuideProfile />} />
+            </Route>
           </Route>
 
-          <Route path='/faculty-coordinator' element={<FacultyLayout />}>
-            <Route path='dashboard' element={<FacultyDashboard/>}/>
-            <Route path='profile' element={<FacultyProfile/>}/>
+          <Route element={<PrivateRoute requiredRoles={"faculty"} />}>
+            <Route path='/faculty-coordinator' element={<FacultyLayout />}>
+              <Route path='dashboard' element={<FacultyDashboard />} />
+              <Route path='profile' element={<FacultyProfile />} />
+            </Route>
           </Route>
 
         </Routes>

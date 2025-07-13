@@ -6,8 +6,10 @@ import path from 'path';
 import fs from 'fs';
 import http from 'http';
 import { Server } from 'socket.io';
-
+import dotenv from 'dotenv';
 import { Message } from './models/index.js'; // after syncing models
+
+dotenv.config({ path: path.resolve(process.cwd(), 'server', 'config', '.env') });
 
 // Create upload dir if not exist
 if (!fs.existsSync('./uploads')) fs.mkdirSync('./uploads');
