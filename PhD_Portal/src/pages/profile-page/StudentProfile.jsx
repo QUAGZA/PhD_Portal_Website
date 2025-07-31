@@ -7,8 +7,9 @@ import {
   User, Calendar, Phone, Mail,
   GraduationCap, BookOpen, FileText
 } from "lucide-react"
-
+import useRequireAuth from "../../hooks/useRequireAuth"
 export default function StudentProfile() {
+  useRequireAuth(["student", "admin"]);
   const [activeSection, setActiveSection] = useState("personal")
 
   const { profile, personalDetails, educationalDetails, programDetails } = studentData

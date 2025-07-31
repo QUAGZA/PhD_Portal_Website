@@ -1,3 +1,5 @@
+import useRequireAuth from "../../hooks/useRequireAuth";
+
 const modules = [
   {
     title: "Module 1",
@@ -36,6 +38,9 @@ const modules = [
 ];
 
 const LearningGuides = () => {
+  
+  useRequireAuth(["student", "admin"]);
+  
   return (
     <div className="max-w-screen-xl mx-auto w-full p-6 space-y-6">
       <h2 className="text-[22px] font-bold text-black border-b border-red-600 pb-2">

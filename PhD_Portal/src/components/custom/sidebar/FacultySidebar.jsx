@@ -15,9 +15,11 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
+  SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { SidebarTrigger } from "../../ui/sidebar";
+import LogoutButton from "./LogoutButton";
 
 // Sample data
 const data = {
@@ -88,8 +90,11 @@ export default function FacultySidebar(props) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain}/>
-      <SidebarTrigger className="absolute right-2 bottom-2" />
+      <SidebarTrigger className="absolute right-2 bottom-16" />
       </SidebarContent>
+      <SidebarFooter>
+        <LogoutButton />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

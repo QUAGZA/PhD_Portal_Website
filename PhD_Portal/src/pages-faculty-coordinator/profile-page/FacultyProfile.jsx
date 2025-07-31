@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import useRequireAuth from "../../hooks/useRequireAuth";
 
 const facultyProfile = {
   name: "Faculty Name",
@@ -30,6 +31,9 @@ const facultyProfile = {
 };
 
 export default function FacultyProfile() {
+
+  useRequireAuth(["faculty-coordinator", "admin"]);
+
   return (
     <div className="p-4 space-y-4">
       {/* Header */}

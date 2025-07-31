@@ -10,6 +10,8 @@ import { CalendarDays, Edit } from "lucide-react"
 import { SquareArrowOutUpRight } from "lucide-react"
 import { Link } from "react-router-dom"
 import ScheduleCard from "./ScheduleCard"
+import useRequireAuth from "../../hooks/useRequireAuth"
+
 const students = [
   { name: "Student 1 Name", progress: 80, attendance: 70, batch: "B3" },
   { name: "Student 2 Name", progress: 80, attendance: 70, batch: "B3" },
@@ -52,6 +54,8 @@ const schedule = [
 ]
 
 export default function GuideDashboard() {
+  useRequireAuth(["guide", "admin"]);
+
   return (
     <div className="p-6 space-y-6 font-[Marcellus]">
       <h2 className="text-2xl font-semibold">
