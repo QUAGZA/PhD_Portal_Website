@@ -81,7 +81,7 @@ const userSchema = new mongoose.Schema({
         department: { type: String },
         admissionYear: { type: String },
         semester: { type: String },
-        guideName: { type: String },
+        guide: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         guideEmail: { type: String },
         status: { type: String },
         domain: { type: String },
