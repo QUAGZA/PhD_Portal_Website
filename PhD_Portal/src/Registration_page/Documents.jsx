@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useDispatch, useStore, useSelector } from 'react-redux';
+import { useDispatch, useStore, useSelector } from "react-redux";
 import FileInput from "./File_input"; // adjust path as needed
+import userService from "../services/userService";
 
-const Document = ({setActiveTab}) => {
+const Document = ({ setActiveTab }) => {
   const [files, setFiles] = useState({
     undergradMarksheet: null,
     postgradMarksheet: null,
@@ -15,26 +16,41 @@ const Document = ({setActiveTab}) => {
     bonafideCertificate: null,
     nocCertificate: null,
   });
-  
+
   const personalDetails = useSelector((state) => state.personalDetails);
-  const undergradDegrees = useSelector((state) => state.educationDetails.undergradDegrees);
-  const postgradDegrees = useSelector((state) => state.educationDetails.postgradDegrees);
-  const employmentDetails = useSelector((state) => state.educationDetails.employmentRecords);
+  const undergradDegrees = useSelector(
+    (state) => state.educationDetails.undergradDegrees,
+  );
+  const postgradDegrees = useSelector(
+    (state) => state.educationDetails.postgradDegrees,
+  );
+  const employmentDetails = useSelector(
+    (state) => state.educationDetails.employmentRecords,
+  );
 
   // const academicDetails = {
   //   undergradDegrees: undergradDegrees,
   //   postgradDegrees: postgradDegrees,
   // }
 
-  const AcademicU = undergradDegrees.map((degree) => ({...degree, email: personalDetails.email}));
-  const AcademicP = postgradDegrees.map((degree) => ({...degree, type: "PG", email: personalDetails.email}));
+  const AcademicU = undergradDegrees.map((degree) => ({
+    ...degree,
+    email: personalDetails.email,
+  }));
+  const AcademicP = postgradDegrees.map((degree) => ({
+    ...degree,
+    type: "PG",
+    email: personalDetails.email,
+  }));
 
-  console.log("Academic U:", AcademicU);
-  console.log("Academic P:", AcademicP);
+  // console.log("Academic U:", AcademicU);
+  // console.log("Academic P:", AcademicP);
 
   const aq = [...AcademicU, ...AcademicP];
-  const empDetails = employmentDetails.map((emp) => ({...emp, email: personalDetails.email})); 
-  
+  const empDetails = employmentDetails.map((emp) => ({
+    ...emp,
+    email: personalDetails.email,
+  }));
 
   const handleFileChange = (field, file) => {
     setFiles((prev) => ({
@@ -46,40 +62,34 @@ const Document = ({setActiveTab}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          personalDetails,
-          academicQualifications: aq,
-          employmentDetails: empDetails,
-        }),
+      const response = await userService.submitRegistration({
+        personalDetails,
+        academicQualifications: aq,
+        employmentDetails: empDetails,
       });
 
-      if (!response.ok) throw new Error("Registration failed");
+      console.log("Registration submitted successfully:", response.data);
+
+      // If registration was successful, proceed with file uploads
+      const formData = new FormData();
+      Object.entries(files).forEach(([key, file]) => {
+        if (file) formData.append(key, file);
+      });
+
+      try {
+        const uploadResponse = await userService.uploadDocuments(formData);
+        console.log("Upload success:", uploadResponse.data);
+
+        // Navigate to success page or next step
+        alert("Registration completed successfully!");
+        // Optionally redirect or show success message
+      } catch (err) {
+        console.error("Upload failed:", err);
+        alert("Document upload failed. Please try again.");
+      }
     } catch (err) {
       console.error("Error submitting details:", err);
       alert("Failed to submit details. Try again.");
-      return;
-    }
-
-    const formData = new FormData();
-    Object.entries(files).forEach(([key, file]) => {
-      if (file) formData.append(key, file);
-    });
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-      console.log("Upload success:", result);
-    } catch (err) {
-      console.error("Upload failed:", err);
     }
   };
 
@@ -92,7 +102,9 @@ const Document = ({setActiveTab}) => {
       onSubmit={handleSubmit}
       className="mx-auto p-6  rounded-lg shadow space-y-5"
     >
-      <h2 className="text-3xl font-medium text-[#B7202E] mb-6 border-b pb-2">Upload Documents</h2>
+      <h2 className="text-3xl font-medium text-[#B7202E] mb-6 border-b pb-2">
+        Upload Documents
+      </h2>
       <FileInput
         id="undergradMarksheet"
         label="Undergraduate Degree Marklist"
@@ -144,11 +156,22 @@ const Document = ({setActiveTab}) => {
         onFileChange={handleFileChange}
       />
       <div className="flex items-center space-x-4 mb-4 mt-10 justify-center">
-      <button className="bg-[#006699] text-white py-2 px-4 rounded cursor-pointer hover:bg-[#004e75]" onClick={() => setActiveTab("courseDetails")}>&lt; Previous</button>
-      <button type="submit" className=" bg-[#B7202E] text-white py-2 px-4 rounded cursor-pointer hover:bg-[#801721]"> Submit &gt;</button>
+        <button
+          className="bg-[#006699] text-white py-2 px-4 rounded cursor-pointer hover:bg-[#004e75]"
+          onClick={() => setActiveTab("courseDetails")}
+        >
+          &lt; Previous
+        </button>
+        <button
+          type="submit"
+          className=" bg-[#B7202E] text-white py-2 px-4 rounded cursor-pointer hover:bg-[#801721]"
+        >
+          {" "}
+          Submit &gt;
+        </button>
       </div>
     </form>
   );
-}
+};
 
 export default Document;
