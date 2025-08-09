@@ -15,5 +15,5 @@ npm run dev
 in a separate terminal navigate to the Backend folder and run:
 
 ```bash
-npx start
+npm start
 ```
