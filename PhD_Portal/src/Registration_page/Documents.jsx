@@ -17,7 +17,10 @@ const Document = ({ setActiveTab }) => {
     nocCertificate: null,
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const personalDetails = useSelector((state) => state.personalDetails);
+
   const undergradDegrees = useSelector(
     (state) => state.educationDetails.undergradDegrees,
   );
@@ -27,26 +30,15 @@ const Document = ({ setActiveTab }) => {
   const employmentDetails = useSelector(
     (state) => state.educationDetails.employmentRecords,
   );
+  const courseDetails = useSelector(
+    (state) => state.educationDetails.courseDetails,
+  );
 
-  // const academicDetails = {
-  //   undergradDegrees: undergradDegrees,
-  //   postgradDegrees: postgradDegrees,
-  // }
+  const academicQualifications = {
+    undergraduate: undergradDegrees,
+    postgraduate: postgradDegrees,
+  };
 
-  const AcademicU = undergradDegrees.map((degree) => ({
-    ...degree,
-    email: personalDetails.email,
-  }));
-  const AcademicP = postgradDegrees.map((degree) => ({
-    ...degree,
-    type: "PG",
-    email: personalDetails.email,
-  }));
-
-  // console.log("Academic U:", AcademicU);
-  // console.log("Academic P:", AcademicP);
-
-  const aq = [...AcademicU, ...AcademicP];
   const empDetails = employmentDetails.map((emp) => ({
     ...emp,
     email: personalDetails.email,
@@ -61,11 +53,22 @@ const Document = ({ setActiveTab }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
+      // Check if user is authenticated first
+      const authStatus = await userService.getAuthStatus();
+      if (!authStatus.data.isAuthenticated) {
+        alert("Please login with Google first!");
+        // Redirect to Google OAuth
+        window.location.href = "http://localhost:9999/auth/google";
+        return;
+      }
       const response = await userService.submitRegistration({
         personalDetails,
-        academicQualifications: aq,
+        academicQualifications: academicQualifications,
         employmentDetails: empDetails,
+        courseDetails: courseDetails,
       });
 
       console.log("Registration submitted successfully:", response.data);
@@ -94,7 +97,7 @@ const Document = ({ setActiveTab }) => {
   };
 
   console.log("Personal Details:", personalDetails);
-  console.log("ACADEMIC DETAILS:", aq);
+  console.log("ACADEMIC DETAILS:", academicQualifications);
   console.log("Postgraduate Degrees:", postgradDegrees);
   console.log("Employment Records:", empDetails);
   return (

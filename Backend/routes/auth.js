@@ -50,12 +50,13 @@ router.get("/success", (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Authentication required" });
   }
+  const needsRegistration = !req.user.registrationComplete;
 
-  res.json({
-    message: "Login successful",
-    user: req.user,
-    needsRegistration: !req.user.registrationComplete,
-  });
+  res.redirect(
+    needsRegistration
+      ? "http://localhost:5173/register"
+      : "http://localhost:5173/student/dashboard",
+  );
 });
 
 // Failure endpoint

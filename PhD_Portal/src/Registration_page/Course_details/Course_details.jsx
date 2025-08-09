@@ -1,15 +1,16 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setDepartment,
   setInstitute,
   setEnrollmentYear,
-  submitCourseDetails
-} from './courseDetailsSlice.js';
+  selectCourseDetails,
+} from "./courseDetailsSlice.js";
 
 const CourseDetails = ({ setActiveTab }) => {
   const dispatch = useDispatch();
-  const { department, institute, enrollmentYear, status, error } = useSelector(state => state.courseDetails);
+  const { department, institute, enrollmentYear } =
+    useSelector(selectCourseDetails);
 
   // date range for year of passing
   const currentYear = new Date().getFullYear();
@@ -24,21 +25,21 @@ const CourseDetails = ({ setActiveTab }) => {
 
     // Simple validation (you can enhance this)
     if (!department || !institute || !enrollmentYear) {
-      alert('Please fill all fields before proceeding.');
+      alert("Please fill all fields before proceeding.");
       return;
     }
 
-    // Dispatch async thunk to submit to backend (optional)
-    // await dispatch(submitCourseDetails({ department, institute, enrollmentYear }));
-
-    // Move to next tab regardless or after success
     setActiveTab("uploadDocuments");
   };
 
   return (
     <form className="p-4 bg-white shadow-md" onSubmit={handleSubmit}>
-      <h2 className="text-3xl font-medium text-[#B7202E] mb-4 border-b pb-2">Course Details</h2>
-      <h3 className="mt-4 block font-semibold text-[#004466] mb-4">Doctorate Program Details</h3>
+      <h2 className="text-3xl font-medium text-[#B7202E] mb-4 border-b pb-2">
+        Course Details
+      </h2>
+      <h3 className="mt-4 block font-semibold text-[#004466] mb-4">
+        Doctorate Program Details
+      </h3>
       <div className="grid grid-cols-1 gap-2 mt-2 mb-2">
         <input
           type="text"
@@ -59,8 +60,14 @@ const CourseDetails = ({ setActiveTab }) => {
           value={enrollmentYear}
           onChange={(e) => dispatch(setEnrollmentYear(e.target.value))}
         >
-          <option value="" disabled>Enrollment Year</option>
-          {years.map((year) => (<option key={year} value={year}>{year}</option>))}
+          <option value="" disabled>
+            Enrollment Year
+          </option>
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
         </select>
       </div>
       {/* Buttons */}
@@ -75,12 +82,10 @@ const CourseDetails = ({ setActiveTab }) => {
         <button
           type="submit"
           className="bg-[#B7202E] text-white py-2 px-4 rounded cursor-pointer hover:bg-[#801721]"
-          disabled={status === 'loading'}
         >
           Proceed &gt;
         </button>
       </div>
-      {status === 'failed' && <p className="text-red-600 mt-2">Error: {error}</p>}
     </form>
   );
 };

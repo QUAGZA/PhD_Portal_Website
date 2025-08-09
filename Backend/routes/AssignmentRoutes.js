@@ -1,14 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getAllAssignmentsByTheGuide,
-    getListOfNonSubmissions,
-    getAssignmentById,
-    submitAssignment,
-    gradeSubmission,
-    createAssignment,
-    getSubmissionsForAssignment,
-    getAssignedAssignmentsBySelf } = require('../Controller/AssignmentController');
-const isLoggedIn = require('../middlewares/OAuth2IsLoggedIn')
+const {
+  getAllAssignmentsByTheGuide,
+  getListOfNonSubmissions,
+  getAssignmentById,
+  submitAssignment,
+  gradeSubmission,
+  createAssignment,
+  getSubmissionsForAssignment,
+  getAssignedAssignmentsBySelf,
+} = require("../Controller/AssignmentController");
+const isLoggedIn = require("../middlewares/OAuth2IsLoggedIn");
 
 router.use(isLoggedIn);
 

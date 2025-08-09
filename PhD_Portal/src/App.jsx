@@ -1,31 +1,31 @@
-import { useState } from 'react'
+import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import './App.css'
-import LandingPage from './pages/landing-page/LandingPage.jsx'
-import LoginPage from "./pages/login-page/LoginPage.jsx";
+import "./App.css";
+import LandingPage from "./starting-point/landing-page/LandingPage.jsx";
+import LoginPage from "./starting-point/login-page/LoginPage.jsx";
 import RegistrationPage from "./Registration_page/Registration_page.jsx";
 
-import StudentLayout from './layout/StudentLayout.jsx';
-import StudentDashboard from './pages/dashboard/StudentDashboard.jsx';
-import AllCourses from './pages/my-courses/AllCourses.jsx';
-import AllCourseDetails from './pages/my-courses/AllCourseDetails.jsx';
-import LearningGuides from './pages/my-courses/LearningGuides.jsx';
-import StudentProfile from './pages/profile-page/StudentProfile.jsx';
-import AssignmentsPanel from './pages/assignment-page/AssignmentPanel.jsx';
-import AssignmentDetails from './pages/assignment-page/AssignmentDetails.jsx';
+import StudentLayout from "./layout/StudentLayout.jsx";
+import StudentDashboard from "./pages/dashboard/StudentDashboard.jsx";
+import AllCourses from "./pages/my-courses/AllCourses.jsx";
+import AllCourseDetails from "./pages/my-courses/AllCourseDetails.jsx";
+import LearningGuides from "./pages/my-courses/LearningGuides.jsx";
+import StudentProfile from "./pages/profile-page/StudentProfile.jsx";
+import AssignmentsPanel from "./pages/assignment-page/AssignmentPanel.jsx";
+import AssignmentDetails from "./pages/assignment-page/AssignmentDetails.jsx";
 
-import GuideLayout from './layout/GuideLayout.jsx';
-import GuideDashboard from './pages-guide/dashboard/GuideDashboard.jsx';
-import StudentList from './pages-guide/student-list/StudentList.jsx';
-import StudentProfilePage from './pages-guide/student-list/StudentProfilePage.jsx';
-import GuideAssignmentList from './pages-guide/assignment-page/GuideAssignmentList.jsx';
-import GuideAssignmentDetails from './pages-guide/assignment-page/GuideAssignmentDetails.jsx';
-import Schedule from './pages-guide/schedule-page/Schedule.jsx';
-import GuideForum from './pages-guide/forum-page/GuideForum.jsx';
-import GuideProfile from './pages-guide/profile-page/GuideProfile.jsx';
-import FacultyLayout from './layout/FacultyLayout.jsx';
-import FacultyDashboard from './pages-faculty-coordinator/dashaboard/FacultyDashboard.jsx';
-import FacultyProfile from './pages-faculty-coordinator/profile-page/FacultyProfile.jsx';
+import GuideLayout from "./layout/GuideLayout.jsx";
+import GuideDashboard from "./pages-guide/dashboard/GuideDashboard.jsx";
+import StudentList from "./pages-guide/student-list/StudentList.jsx";
+import StudentProfilePage from "./pages-guide/student-list/StudentProfilePage.jsx";
+import GuideAssignmentList from "./pages-guide/assignment-page/GuideAssignmentList.jsx";
+import GuideAssignmentDetails from "./pages-guide/assignment-page/GuideAssignmentDetails.jsx";
+import Schedule from "./pages-guide/schedule-page/Schedule.jsx";
+import GuideForum from "./pages-guide/forum-page/GuideForum.jsx";
+import GuideProfile from "./pages-guide/profile-page/GuideProfile.jsx";
+import FacultyLayout from "./layout/FacultyLayout.jsx";
+import FacultyDashboard from "./pages-faculty-coordinator/dashaboard/FacultyDashboard.jsx";
+import FacultyProfile from "./pages-faculty-coordinator/profile-page/FacultyProfile.jsx";
 
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
@@ -60,47 +60,62 @@ const App = () => {
       submission: { name: "Experiment2.pdf", url: "#" },
     },
     // Add more assignments...
-  ]
+  ];
   return (
     <Router>
       <div className="relative h-screen w-screen overflow-auto scroll-smooth font-[Marcellus]">
-
         <Routes>
           {/* Landing page route */}
-          <Route path="/" element={
-            <>
-              {showLanding && <LandingPage onContinue={() => setShowLanding(false)} />}
-              {!showLanding && <LoginPage />}
-            </>}
+          <Route
+            path="/"
+            element={
+              <>
+                {showLanding && (
+                  <LandingPage onContinue={() => setShowLanding(false)} />
+                )}
+                {!showLanding && <LoginPage />}
+              </>
+            }
           />
-          <Route path='/register' element={<RegistrationPage />} />
+          <Route path="/register" element={<RegistrationPage />} />
 
-          <Route path='/student' element={<StudentLayout />}>
-            <Route path='dashboard' element={<StudentDashboard />} />
-            <Route path='courses' element={<AllCourses />} />
-            <Route path='courses/details' element={<AllCourseDetails />} />
-            <Route path='courses/details/learning-guides' element={<LearningGuides />} />
-            <Route path='profile' element={<StudentProfile />} />
-            <Route path="assignments" element={<AssignmentsPanel assignments={assignments} />} />
-            <Route path="assignments/:id" element={<AssignmentDetails assignments={assignments} />} />
+          <Route path="/student" element={<StudentLayout />}>
+            <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="courses" element={<AllCourses />} />
+            <Route path="courses/details" element={<AllCourseDetails />} />
+            <Route
+              path="courses/details/learning-guides"
+              element={<LearningGuides />}
+            />
+            <Route path="profile" element={<StudentProfile />} />
+            <Route
+              path="assignments"
+              element={<AssignmentsPanel assignments={assignments} />}
+            />
+            <Route
+              path="assignments/:id"
+              element={<AssignmentDetails assignments={assignments} />}
+            />
           </Route>
 
-          <Route path='/guide' element={<GuideLayout />}>
-            <Route path='dashboard' element={<GuideDashboard />} />
+          <Route path="/guide" element={<GuideLayout />}>
+            <Route path="dashboard" element={<GuideDashboard />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:id" element={<StudentProfilePage />} />
             <Route path="assignments" element={<GuideAssignmentList />} />
-            <Route path="assignments/:id" element={<GuideAssignmentDetails />} />
+            <Route
+              path="assignments/:id"
+              element={<GuideAssignmentDetails />}
+            />
             <Route path="schedule" element={<Schedule />} />
             <Route path="forum" element={<GuideForum />} />
             <Route path="profile" element={<GuideProfile />} />
           </Route>
 
-          <Route path='/faculty-coordinator' element={<FacultyLayout />}>
-            <Route path='dashboard' element={<FacultyDashboard/>}/>
-            <Route path='profile' element={<FacultyProfile/>}/>
+          <Route path="/faculty-coordinator" element={<FacultyLayout />}>
+            <Route path="dashboard" element={<FacultyDashboard />} />
+            <Route path="profile" element={<FacultyProfile />} />
           </Route>
-
         </Routes>
       </div>
     </Router>

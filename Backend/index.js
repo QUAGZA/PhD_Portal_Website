@@ -7,6 +7,8 @@ const { connectMongoDB } = require("./utility/connection");
 const { jsonParser } = require("./middlewares/index");
 require("./config/passport");
 const authRoutes = require("./routes/auth");
+const registrationRoutes = require("./routes/registration");
+const documentsRoutes = require("./routes/documents");
 
 dotenv.config();
 const app = express();
@@ -40,12 +42,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", authRoutes);
+app.use("/registration", registrationRoutes);
+app.use("/documents", documentsRoutes);
 
-//
 // fetch('http://localhost:9999/dashboard', {
 //     method: 'GET',
 //     credentials: 'include' // 💡 this is crucial
 // })
+
 app.get((req, res) => {
   if (req.isAuthenticated()) {
     return res.status(201).json({
