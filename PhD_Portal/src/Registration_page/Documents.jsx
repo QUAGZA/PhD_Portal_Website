@@ -43,7 +43,7 @@ const Document = ({ setActiveTab }) => {
     ...emp,
     email: personalDetails.email,
   }));
-
+  const aadhar = personalDetails.aadhar;
   const handleFileChange = (field, file) => {
     setFiles((prev) => ({
       ...prev,
@@ -68,15 +68,19 @@ const Document = ({ setActiveTab }) => {
         personalDetails,
         academicQualifications: academicQualifications,
         employmentDetails: empDetails,
-        courseDetails: courseDetails,
+        programDetails: courseDetails,
       });
 
       console.log("Registration submitted successfully:", response.data);
 
       // If registration was successful, proceed with file uploads
       const formData = new FormData();
+      formData.append("aadhar", aadhar);
       Object.entries(files).forEach(([key, file]) => {
-        if (file) formData.append(key, file);
+        if (file) {
+          console.log(`Adding file ${key}:`, file.name); // Only access name if file exists
+          formData.append(key, file);
+        }
       });
 
       try {
@@ -91,7 +95,10 @@ const Document = ({ setActiveTab }) => {
         alert("Document upload failed. Please try again.");
       }
     } catch (err) {
-      console.error("Error submitting details:", err);
+      console.error(
+        "Error submitting details:",
+        err.response?.data || err.message || err,
+      );
       alert("Failed to submit details. Try again.");
     }
   };
@@ -104,6 +111,7 @@ const Document = ({ setActiveTab }) => {
     <form
       onSubmit={handleSubmit}
       className="mx-auto p-6  rounded-lg shadow space-y-5"
+      encType="multipart/form-data"
     >
       <h2 className="text-3xl font-medium text-[#B7202E] mb-6 border-b pb-2">
         Upload Documents

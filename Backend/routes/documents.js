@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(isLoggedIn);
 router.post(
-  "regisrtation-upload",
+  "/registration-upload",
   uploadRegistrationDocuments,
   DocumentController.uploadRegistrationDocuments,
 );

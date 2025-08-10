@@ -5,8 +5,16 @@ const fs = require("fs");
 class DocumentController {
   static async uploadRegistrationDocuments(req, res) {
     try {
+      console.log("Files received:", req.files);
+      console.log("Request body:", req.body);
+
       if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      const { aadhar } = req.body;
+      if (!aadhar) {
+        return res.status(400).json({ message: "Aadhar number is required" });
       }
 
       const uploadedDocuments = Object.keys(req.files).map((documentType) => {
@@ -21,7 +29,6 @@ class DocumentController {
 
       res.json({
         message: `${uploadedDocuments.length} documents uploaded successfully!`,
-        rollNumber: rollNumber,
         uploadedDocuments: uploadedDocuments,
         totalUploaded: uploadedDocuments.length,
       });

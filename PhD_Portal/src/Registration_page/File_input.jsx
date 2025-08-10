@@ -21,6 +21,7 @@ function FileInput({ label, id, onFileChange }) {
       <input
         id={id}
         type="file"
+        name={label}
         className="hidden"
         onChange={handleChange}
         accept=".pdf,.jpg,.jpeg,.png"

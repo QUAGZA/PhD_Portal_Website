@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
     },
 
     personalDetails: {
+      title: { type: String },
+      firstName: { type: String },
+      middleName: { type: String },
+      lastName: { type: String },
       fatherName: { type: String },
       motherName: { type: String },
       gender: { type: String, enum: ["Male", "Female", "Other", ""] },
@@ -44,9 +48,16 @@ const userSchema = new mongoose.Schema(
           message: (props) => `${props.value} is not a valid Aadhar number!`,
         },
       },
-      railwayStation: { type: String },
-      residentialAddress: [{ type: String }],
-      permanentAddress: [{ type: String }],
+      addressLine1: { type: String },
+      addressLine2: { type: String },
+      district: { type: String },
+      state: { type: String },
+      pinCode: { type: Number },
+      permanentAddressLine1: { type: String },
+      permanentAddressLine2: { type: String },
+      permanentDistrict: { type: String },
+      permanentState: { type: String },
+      permanentPinCode: { type: Number },
       contacts: {
         mobile: { type: String },
         alternateMobile: { type: String },
@@ -85,16 +96,20 @@ const userSchema = new mongoose.Schema(
         },
       ],
     },
-    employmentDetails: {
-      designation: { type: String },
-      organization: { type: String },
-      duration: { type: String },
-    },
-
+    employmentDetails: [
+      {
+        designation: { type: String },
+        organization: { type: String },
+        startDate: { type: String },
+        endDate: { type: String },
+        duration: { type: String },
+      },
+    ],
     programDetails: {
       rollNumber: { type: String },
       department: { type: String },
-      admissionYear: { type: String },
+      institute: { type: String },
+      enrollmentYear: { type: String },
       semester: { type: String },
       guideName: { type: String },
       guideEmail: { type: String },

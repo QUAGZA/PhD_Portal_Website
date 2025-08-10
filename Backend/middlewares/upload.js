@@ -23,13 +23,22 @@ const storage = multer.diskStorage({
     const uploadType = req.baseUrl.includes("assignment")
       ? "assignments"
       : "documents";
-    const rollNumber =
-      req.user.profile?.enrollmentId ||
-      req.body.rollNumber ||
-      req.user._id.toString();
+    // const rollNumber = req.user.personal; ||
+    // req.body.rollNumber ||
+    // req.user._id.toString();
+    //
+    // Use aadhar from request body
+    const aadhar = req.body.aadhar;
+    if (!aadhar) {
+      console.error("Aadhar number missing in request");
+      return cb(
+        new Error("Aadhar number is required for document upload"),
+        null,
+      );
+    }
 
     // Create user-specific folder using rollNumber
-    const userDir = path.join(__dirname, "../uploads", uploadType, rollNumber);
+    const userDir = path.join(__dirname, "../uploads", uploadType, aadhar);
 
     if (!fs.existsSync(userDir)) {
       fs.mkdirSync(userDir, { recursive: true });

@@ -4,31 +4,31 @@ const EmploymentRecord = require("../Model/EmploymentRecords");
 const mongoose = require("mongoose");
 
 class RegistrationController {
-  static async getRegistrationStatus(req, res) {
-    try {
-      const user = await User.findById(req.user._id);
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found",
-          registrationComplete: false,
-        });
-      }
+  // static async getRegistrationStatus(req, res) {
+  //   try {
+  //     const user = await User.findById(req.user._id);
+  //     if (!user) {
+  //       return res.status(404).json({
+  //         message: "User not found",
+  //         registrationComplete: false,
+  //       });
+  //     }
 
-      // Simple logic: if user exists in DB, registration is complete
-      const isRegistrationComplete = !!user;
+  //     // Simple logic: if user exists in DB, registration is complete
+  //     const isRegistrationComplete = !!user;
 
-      res.json({
-        registrationComplete: isRegistrationComplete,
-        user: user,
-        message: isRegistrationComplete
-          ? "User is registered"
-          : "Registration required",
-      });
-    } catch (error) {
-      console.error("Get registration status error:", error);
-      res.status(500).json({ message: "Server error", error: error.message });
-    }
-  }
+  //     res.json({
+  //       registrationComplete: isRegistrationComplete,
+  //       user: user,
+  //       message: isRegistrationComplete
+  //         ? "User is registered"
+  //         : "Registration required",
+  //     });
+  //   } catch (error) {
+  //     console.error("Get registration status error:", error);
+  //     res.status(500).json({ message: "Server error", error: error.message });
+  //   }
+  // }
 
   // Your existing legacy method - unchanged
   static async registerUser(req, res) {
@@ -46,7 +46,7 @@ class RegistrationController {
         personalDetails,
         academicQualifications,
         employmentDetails,
-        courseDetails,
+        programDetails,
       } = req.body;
 
       // Find the existing user from the session
@@ -62,7 +62,7 @@ class RegistrationController {
       if (academicQualifications)
         existingUser.academicQualifications = academicQualifications;
       if (employmentDetails) existingUser.employmentDetails = employmentDetails;
-      if (courseDetails) existingUser.courseDetails = courseDetails;
+      if (programDetails) existingUser.programDetails = courseDetails;
 
       existingUser.registrationComplete = true;
 
