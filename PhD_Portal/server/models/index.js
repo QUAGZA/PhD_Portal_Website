@@ -7,6 +7,7 @@ import AcademicQualification from './AcademicQualifications.js';
 import EmploymentRecord from './EmploymentRecords.js';
 import Message from './Message.js';
 import User from './User.js';
+import Student from './Student.js';
 
 // Export all models and sequelize instance
 export  {
@@ -17,4 +18,5 @@ export  {
   EmploymentRecord,
   Message,
   User,
+  Student,
 };
