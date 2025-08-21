@@ -5,7 +5,7 @@ import { SendHorizonal } from "lucide-react";
 import clsx from "clsx";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000"); // or your deployed endpoint
+const socket = io("http://localhost:9999"); // or your deployed endpoint
 const mySocketId = crypto.randomUUID(); // unique per tab
 
 export default function GuideForum() {
@@ -31,10 +31,7 @@ export default function GuideForum() {
   useEffect(() => {
     socket.on("chatMessage", (msg) => {
       if (msg.senderId !== mySocketId) {
-        setMessages((prev) => [
-          ...prev,
-          { ...msg, fromSelf: false },
-        ]);
+        setMessages((prev) => [...prev, { ...msg, fromSelf: false }]);
       }
     });
 
@@ -85,7 +82,7 @@ export default function GuideForum() {
                 "rounded-xl px-4 py-2 text-sm whitespace-pre-wrap shadow relative",
                 msg.fromSelf
                   ? "bg-blue-100 text-gray-800"
-                  : "bg-emerald-100 text-gray-800"
+                  : "bg-emerald-100 text-gray-800",
               )}
             >
               {msg.message}

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   title: "",
@@ -7,6 +7,9 @@ const initialState = {
   lastName: "",
   motherName: "",
   fatherName: "",
+  gender: "",
+  maritalStatus: "",
+  aadhar: "",
   addressLine1: "",
   addressLine2: "",
   district: "",
@@ -14,32 +17,38 @@ const initialState = {
   pinCode: "",
   permanentAddressLine1: "",
   permanentAddressLine2: "",
-  permanetDistrict: "",
+  permanentDistrict: "",
   permanentState: "",
   permanentPinCode: "",
-  gender: "",
-  aadhar: "",
-  maritalStatus: "",
-  mobile: "",
-  altMobile: "",
-  email: "",
-  altEmail: "",
+  contacts: {
+    mobile: "",
+    alternateMobile: "",
+    primaryEmail: "",
+    alternateEmail: "",
+  },
 };
 
 const personalDetailsSlice = createSlice({
-  name: 'personalDetails',
+  name: "personalDetails",
   initialState,
   reducers: {
     updateField: (state, action) => {
       const { field, value } = action.payload;
-      state[field] = value;
+      if (field.includes(".")) {
+        // Handle nested fields like 'contacts.mobile'
+        const [parent, child] = field.split(".");
+        state[parent][child] = value;
+      } else {
+        state[field] = value;
+      }
     },
     resetForm: () => initialState,
     setAllFields: (state, action) => {
       return { ...state, ...action.payload };
-    }
-  }
+    },
+  },
 });
 
-export const { updateField, resetForm, setAllFields } = personalDetailsSlice.actions;
+export const { updateField, resetForm, setAllFields } =
+  personalDetailsSlice.actions;
 export default personalDetailsSlice.reducer;

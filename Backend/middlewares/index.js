@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 
 function jsonParser() {
-    return express.json();
+  return express.json();
 }
 
 module.exports = {
-    jsonParser
+  jsonParser,
 };
