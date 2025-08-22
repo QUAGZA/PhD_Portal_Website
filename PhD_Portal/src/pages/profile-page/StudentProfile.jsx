@@ -46,29 +46,29 @@ export default function StudentProfile() {
 
         // Use mock data for development/testing purposes
         // Comment this out or remove in production
-        setUserData({
-          email: "student@example.com",
-          personalDetails: {
-            title: "Mr.",
-            firstName: "John",
-            lastName: "Doe",
-            gender: "Male",
-            maritalStatus: "Single",
-            contacts: {
-              mobile: "9876543210",
-              primaryEmail: "student@example.com",
-            },
-          },
-          programDetails: {
-            rollNumber: "PHD2023001",
-            department: "Computer Science",
-            institute: "K. J. Somaiya School Of Engineering",
-            enrollmentYear: "2023",
-            semester: "2",
-            guideName: "Dr. Jane Smith",
-            status: "Active",
-          },
-        });
+        // setUserData({
+        //   email: "student@example.com",
+        //   personalDetails: {
+        //     title: "Mr.",
+        //     firstName: "John",
+        //     lastName: "Doe",
+        //     gender: "Male",
+        //     maritalStatus: "Single",
+        //     contacts: {
+        //       mobile: "9876543210",
+        //       primaryEmail: "student@example.com",
+        //     },
+        //   },
+        //   programDetails: {
+        //     rollNumber: "PHD2023001",
+        //     department: "Computer Science",
+        //     institute: "K. J. Somaiya School Of Engineering",
+        //     enrollmentYear: "2023",
+        //     semester: "2",
+        //     guideName: "Dr. Jane Smith",
+        //     status: "Active",
+        //   },
+        // });
       } finally {
         setLoading(false);
       }
@@ -88,7 +88,7 @@ export default function StudentProfile() {
     );
   }
 
-  if (error && !userData) {
+  if (error || !userData) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center max-w-md p-6 bg-white rounded-lg shadow">
@@ -108,25 +108,18 @@ export default function StudentProfile() {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-900">
             Error Loading Profile
           </h3>
-          <p className="text-gray-600">{error}</p>
-          {error.includes("not logged in") ? (
-            <button
-              onClick={() => (window.location.href = "/")}
-              className="mt-4 px-4 py-2 bg-[#B7202E] text-white rounded hover:bg-[#9a1c27] transition-colors"
-            >
-              Go to Login
-            </button>
-          ) : (
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-[#B7202E] text-white rounded hover:bg-[#9a1c27] transition-colors"
-            >
-              Try Again
-            </button>
-          )}
+          <p className="mt-2 text-gray-600">
+            {error || "Failed to load user data"}
+          </p>
+          <Button
+            className="mt-4 bg-[#B7202E] hover:bg-[#801721]"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </Button>
         </div>
       </div>
     );
