@@ -24,7 +24,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle common errors here
+    // Handle authentication errors
+    if (error.response && error.response.status === 401) {
+      console.log("Authentication error: User not authenticated");
+
+      // If we're not already on the login page, redirect there
+      if (!window.location.pathname.startsWith("/")) {
+        window.location.href = "/";
+      }
+    }
+
+    // Handle other common errors here
     return Promise.reject(error);
   },
 );

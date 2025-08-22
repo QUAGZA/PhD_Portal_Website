@@ -1,21 +1,10 @@
-const jwt = require("jsonwebtoken");
-
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No token provided" });
+// Auth middleware to check if user is authenticated via session
+const isAuthenticated = (req, res, next) => {
+  // Check if authenticated via Passport session
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
   }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
-  }
+  return res.status(401).json({ message: "Authentication required" });
 };
 
-module.exports = authMiddleware;
+module.exports = { isAuthenticated };

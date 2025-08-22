@@ -1,4 +1,5 @@
 import api from "./api";
+import axios from "axios";
 
 export const userService = {
   // Authentication
@@ -11,6 +12,15 @@ export const userService = {
   // User profile
   getUserProfile: () => api.get("/auth/profile"),
   updateUserProfile: (data) => api.put("/auth/profile", data),
+
+  // Guide preferences
+  submitGuidePreferences: (preferences) =>
+    api.post("/guide-preferences/submit", { preferences }),
+  getGuidePreferencesPdf: () =>
+    api.get("/guide-preferences/pdf", {
+      responseType: "blob",
+      headers: { Accept: "application/pdf" },
+    }),
 
   // Registration process
   getRegistrationStatus: () => api.get("/registration/status"),

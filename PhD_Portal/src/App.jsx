@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 import "./App.css";
 import LandingPage from "./starting-point/landing-page/LandingPage.jsx";
 import LoginPage from "./starting-point/login-page/LoginPage.jsx";
@@ -13,6 +15,7 @@ import LearningGuides from "./pages/my-courses/LearningGuides.jsx";
 import StudentProfile from "./pages/profile-page/StudentProfile.jsx";
 import AssignmentsPanel from "./pages/assignment-page/AssignmentPanel.jsx";
 import AssignmentDetails from "./pages/assignment-page/AssignmentDetails.jsx";
+import GuideAllocation from "./pages/guide-allocation/GuideAllocation.jsx";
 
 import GuideLayout from "./layout/GuideLayout.jsx";
 import GuideDashboard from "./pages-guide/dashboard/GuideDashboard.jsx";
@@ -26,6 +29,7 @@ import GuideProfile from "./pages-guide/profile-page/GuideProfile.jsx";
 import FacultyLayout from "./layout/FacultyLayout.jsx";
 import FacultyDashboard from "./pages-faculty-coordinator/dashaboard/FacultyDashboard.jsx";
 import FacultyProfile from "./pages-faculty-coordinator/profile-page/FacultyProfile.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   const [showLanding, setShowLanding] = useState(true);
@@ -63,61 +67,85 @@ const App = () => {
   ];
   return (
     <Router>
-      <div className="relative h-screen w-screen overflow-auto scroll-smooth font-[Marcellus]">
-        <Routes>
-          {/* Landing page route */}
-          <Route
-            path="/"
-            element={
-              <>
-                {showLanding && (
-                  <LandingPage onContinue={() => setShowLanding(false)} />
-                )}
-                {!showLanding && <LoginPage />}
-              </>
-            }
-          />
-          <Route path="/register" element={<RegistrationPage />} />
+      <Provider store={store}>
+        <div className="relative h-screen w-screen overflow-auto scroll-smooth font-[Marcellus]">
+          <Routes>
+            {/* Landing page route */}
+            <Route
+              path="/"
+              element={
+                <>
+                  {showLanding && (
+                    <LandingPage onContinue={() => setShowLanding(false)} />
+                  )}
+                  {!showLanding && <LoginPage />}
+                </>
+              }
+            />
+            <Route path="/register" element={<RegistrationPage />} />
 
-          <Route path="/student" element={<StudentLayout />}>
-            <Route path="dashboard" element={<StudentDashboard />} />
-            <Route path="courses" element={<AllCourses />} />
-            <Route path="courses/details" element={<AllCourseDetails />} />
             <Route
-              path="courses/details/learning-guides"
-              element={<LearningGuides />}
-            />
-            <Route path="profile" element={<StudentProfile />} />
-            <Route
-              path="assignments"
-              element={<AssignmentsPanel assignments={assignments} />}
-            />
-            <Route
-              path="assignments/:id"
-              element={<AssignmentDetails assignments={assignments} />}
-            />
-          </Route>
+              path="/student"
+              element={
+                <ProtectedRoute role="Student">
+                  <StudentLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<StudentDashboard />} />
+              <Route path="courses" element={<AllCourses />} />
+              <Route path="courses/details" element={<AllCourseDetails />} />
+              <Route
+                path="courses/details/learning-guides"
+                element={<LearningGuides />}
+              />
+              <Route path="profile" element={<StudentProfile />} />
+              <Route
+                path="assignments"
+                element={<AssignmentsPanel assignments={assignments} />}
+              />
+              <Route
+                path="assignments/:id"
+                element={<AssignmentDetails assignments={assignments} />}
+              />
+              <Route path="guide-allocation" element={<GuideAllocation />} />
+            </Route>
 
-          <Route path="/guide" element={<GuideLayout />}>
-            <Route path="dashboard" element={<GuideDashboard />} />
-            <Route path="students" element={<StudentList />} />
-            <Route path="students/:id" element={<StudentProfilePage />} />
-            <Route path="assignments" element={<GuideAssignmentList />} />
             <Route
-              path="assignments/:id"
-              element={<GuideAssignmentDetails />}
-            />
-            <Route path="schedule" element={<Schedule />} />
-            <Route path="forum" element={<GuideForum />} />
-            <Route path="profile" element={<GuideProfile />} />
-          </Route>
+              path="/guide"
+              element={
+                <ProtectedRoute role="Guide">
+                  <GuideLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<GuideDashboard />} />
+              <Route path="students" element={<StudentList />} />
+              <Route path="students/:id" element={<StudentProfilePage />} />
+              <Route path="assignments" element={<GuideAssignmentList />} />
+              <Route
+                path="assignments/:id"
+                element={<GuideAssignmentDetails />}
+              />
+              <Route path="schedule" element={<Schedule />} />
+              <Route path="forum" element={<GuideForum />} />
+              <Route path="profile" element={<GuideProfile />} />
+            </Route>
 
-          <Route path="/faculty-coordinator" element={<FacultyLayout />}>
-            <Route path="dashboard" element={<FacultyDashboard />} />
-            <Route path="profile" element={<FacultyProfile />} />
-          </Route>
-        </Routes>
-      </div>
+            <Route
+              path="/faculty-coordinator"
+              element={
+                <ProtectedRoute role="Admin">
+                  <FacultyLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<FacultyDashboard />} />
+              <Route path="profile" element={<FacultyProfile />} />
+            </Route>
+          </Routes>
+        </div>
+      </Provider>
     </Router>
   );
 };
