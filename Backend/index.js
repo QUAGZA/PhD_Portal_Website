@@ -3,12 +3,14 @@ const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const { connectMongoDB } = require("./utility/connection");
 const { jsonParser } = require("./middlewares/index");
 require("./config/passport");
 const authRoutes = require("./routes/auth");
 const registrationRoutes = require("./routes/registration");
 const documentsRoutes = require("./routes/documents");
+const guidePreferencesRoutes = require("./routes/guidePreferences");
 
 dotenv.config();
 const app = express();
@@ -41,9 +43,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Serve static files from uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use("/auth", authRoutes);
 app.use("/registration", registrationRoutes);
 app.use("/documents", documentsRoutes);
+app.use("/guide-preferences", guidePreferencesRoutes);
 
 // fetch('http://localhost:9999/dashboard', {
 //     method: 'GET',

@@ -1,6 +1,8 @@
 // PhD_Portal_Website/PhD_Portal/src/starting-point/login-page/LoginPage.jsx
-import { React, useState } from "react";
-import { Link } from "react-router-dom";
+import { React, useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { checkAuthStatus } from "../../redux/slices/authSlice";
 import lg2 from "../../assets/Lg_2.jpg";
 import lg1 from "../../assets/Lg_1.jpg";
 import lg3 from "../../assets/Lg_3.jpg";
@@ -17,6 +19,59 @@ const images = [lg1, lg2, lg3];
 const LoginPage = () => {
   const [active, setActive] = useState("login");
   const [showSignUpDialog, setShowSignUpDialog] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await dispatch(checkAuthStatus()).unwrap();
+      } catch (error) {
+        console.error("Auth check failed:", error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated && user && !isCheckingAuth) {
+      // Redirect based on user role
+      const from = location.state?.from || getDefaultRoute(user.role);
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, user, isCheckingAuth, navigate, location]);
+
+  const getDefaultRoute = (role) => {
+    switch (role) {
+      case "Student":
+        return "/student/dashboard";
+      case "Guide":
+        return "/guide/dashboard";
+      case "Admin":
+        return "/faculty-coordinator/dashboard";
+      default:
+        return "/student/dashboard";
+    }
+  };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#B7202E] mx-auto"></div>
+          <p className="mt-3 text-gray-600">
+            Checking authentication status...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
