@@ -33,7 +33,7 @@ app.use(jsonParser());
 
 app.use(
   session({
-    secret: "your-session-secret",
+    secret: process.env.SESSION_SECRET || "your-session-secret",
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 },
