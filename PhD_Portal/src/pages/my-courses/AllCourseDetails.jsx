@@ -51,7 +51,7 @@ const AllCourseDetails = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2">
           {modules.map((module, index) => (
-            <div key={index} className="bg-white border rounded-lg shadow p-4 flex flex-col justify-between h-[200px]">
+            <div key={index} className="bg-white rounded-lg shadow p-4 flex flex-col justify-between h-[200px]">
               <div>
                 <h3 className="text-[16px] font-bold text-black mb-2">
                   {module.title}
@@ -95,7 +95,7 @@ const AllCourseDetails = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white border rounded-lg shadow p-4">
+          <div className="bg-white rounded-lg shadow p-4">
             <h3 className="text-[16px] font-bold text-black mb-2">Faculty</h3>
             <p className="text-sm mb-1">Mr. Swapnil Pawar</p>
             <p className="text-sm text-gray-600 mb-3">
@@ -103,7 +103,7 @@ const AllCourseDetails = () => {
             </p>
             <textarea
               placeholder="Write to faculty..."
-              className="w-full p-2 border rounded text-sm mb-2"
+              className="w-full p-2 border border-gray-400 rounded text-sm mb-2"
             ></textarea>
             <button className="w-full py-1 cursor-pointer bg-[#B7202E] text-white text-sm rounded">
               Send
@@ -126,7 +126,7 @@ const AllCourseDetails = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white border rounded-lg shadow p-4 flex flex-col items-center">
+        <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
           <h3 className="text-[16px] font-bold text-black mb-4">Progress</h3>
 
           <div className="flex justify-center gap-8">
@@ -197,7 +197,7 @@ const AllCourseDetails = () => {
 
 
 
-        <div className="bg-white border rounded-lg shadow p-4">
+        <div className="bg-white rounded-lg shadow p-4">
           <h3 className="text-[16px] font-bold text-black mb-2">Assignments</h3>
           <ul className="text-sm space-y-2">
             <li>
@@ -215,7 +215,7 @@ const AllCourseDetails = () => {
           </ul>
         </div>
 
-        <div className="bg-white border rounded-lg shadow p-4 md:hidden">
+        <div className="bg-white rounded-lg shadow p-4 md:hidden">
           <h3 className="text-[16px] font-bold text-black mb-2">
             Announcements
           </h3>

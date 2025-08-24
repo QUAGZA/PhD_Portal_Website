@@ -1,4 +1,5 @@
 const User = require("../Model/User");
+const GuidePref = require("../Model/GuidePref");
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
@@ -37,6 +38,18 @@ exports.submitGuidePreferences = async (req, res) => {
     console.log("Using Aadhaar for filename:", aadhar);
     const fileName = `${aadhar}_guide_preferences.pdf`;
     const filePath = path.resolve(preferencesDir, fileName);
+
+    const pref = new GuidePref({
+      email: user.email,
+      preference1: preferences.preference1.guideName,
+      researchArea1: preferences.preference1.researchArea,
+      preference2: preferences.preference2.guideName,
+      researchArea2: preferences.preference2.researchArea,
+      preference3: preferences.preference3.guideName,
+      researchArea3: preferences.preference3.researchArea,
+      createdBy: user._id  
+    })
+    await pref.save();
 
     // Create PDF document
     const doc = new PDFDocument();

@@ -99,7 +99,7 @@ const LoginPage = () => {
         <div className="w-1/2 p-6 flex flex-col justify-center">
           <img src={somaiya_logo} alt="Logo" className="w-20 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-center mb-4 text-[#B7202E]">
-            Login to Shodh Ganga
+            Login to PhD Portal
           </h2>
           <div className="flex rounded-lg overflow-hidden mb-4">
             <button
