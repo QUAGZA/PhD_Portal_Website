@@ -206,7 +206,7 @@ export default function StudentProfile() {
                 <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
                   <Avatar className="w-24 h-24 border-4 border-white bg-white">
                     <AvatarImage src={profile.avatar} alt="Profile" />
-                    <AvatarFallback className="bg-blue-500 text-white text-2xl">
+                    <AvatarFallback className="bg-white text-black text-2xl">
                       {profile.initials}
                     </AvatarFallback>
                   </Avatar>

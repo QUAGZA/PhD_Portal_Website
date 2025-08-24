@@ -102,7 +102,7 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-[#f9f9f9]">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 py-4">
+      <header className="bg-white border-b border-gray-100 rounded-lg py-4">
         <div className="container mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 rounded-full border border-gray-100">
@@ -130,10 +130,10 @@ export default function StudentDashboard() {
           <div className="lg:col-span-3 space-y-6">
             {/* My Courses */}
             <Card className="bg-white shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center justify-between border-b">
+              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center justify-between border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-[#e74c3c]"
+                    className="w-5 h-5 text-[#B7202E]"
                     viewBox="0 0 24 24"
                     fill="none"
                   >
@@ -216,7 +216,7 @@ export default function StudentDashboard() {
                           </div>
                           <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#e74c3c] rounded-full"
+                              className="h-full bg-[#B7202E] rounded-full"
                               style={{ width: `${course.progress}%` }}
                             ></div>
                           </div>
@@ -230,10 +230,10 @@ export default function StudentDashboard() {
 
             {/* Assignments */}
             <Card className="bg-white shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center justify-between border-b">
+              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center justify-between border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-[#e74c3c]"
+                    className="w-5 h-5 text-[#B7202E]"
                     viewBox="0 0 24 24"
                     fill="none"
                   >
@@ -316,8 +316,8 @@ export default function StudentDashboard() {
                       <Badge
                         className={`${
                           assignment.status === "submitted"
-                            ? "bg-[#e74c3c]"
-                            : "bg-[#f39c12]"
+                            ? "bg-[#B7202E]"
+                            : "bg-[#58595B]"
                         } text-white rounded px-2 py-0.5 text-sm font-normal`}
                       >
                         {assignment.status === "submitted"
@@ -332,10 +332,10 @@ export default function StudentDashboard() {
 
             {/* Progress */}
             <Card className="bg-white shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="bg-white px-6 py-4 flex flex-col items-start border-b">
+              <CardHeader className="bg-white px-6 py-4 flex flex-col items-start border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-[#e74c3c]"
+                    className="w-5 h-5 text-[#B7202E]"
                     viewBox="0 0 24 24"
                     fill="none"
                   >
@@ -398,7 +398,7 @@ export default function StudentDashboard() {
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                           />
                           <path
-                            className="stroke-[#e74c3c] stroke-[3]"
+                            className="stroke-[#B7202E] stroke-[3]"
                             strokeLinecap="round"
                             fill="none"
                             strokeDasharray={`${item.progress}, 100`}
@@ -423,10 +423,10 @@ export default function StudentDashboard() {
           <div className="space-y-6">
             {/* Announcements */}
             <Card className="bg-white shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center border-b">
+              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-[#e74c3c]"
+                    className="w-5 h-5 text-[#B7202E]"
                     viewBox="0 0 24 24"
                     fill="none"
                   >
@@ -461,7 +461,7 @@ export default function StudentDashboard() {
                 <div className="space-y-3">
                   {announcements.map((announcement, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#f39c12] rounded-full flex-shrink-0" />
+                      <div className="w-2 h-2 bg-[#58595B] rounded-full flex-shrink-0" />
                       <span className="text-base">{announcement}</span>
                     </div>
                   ))}
@@ -471,10 +471,10 @@ export default function StudentDashboard() {
 
             {/* Resources */}
             <Card className="bg-white shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center border-b">
+              <CardHeader className="bg-white px-6 py-4 flex flex-row items-center border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-[#e74c3c]"
+                    className="w-5 h-5 text-[#B7202E]"
                     viewBox="0 0 24 24"
                     fill="none"
                   >
@@ -516,7 +516,7 @@ export default function StudentDashboard() {
                 <div className="space-y-3">
                   {resources.map((resource, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#f39c12] rounded-full flex-shrink-0" />
+                      <div className="w-2 h-2 bg-[#58595B] rounded-full flex-shrink-0" />
                       <span className="text-base">{resource}</span>
                     </div>
                   ))}

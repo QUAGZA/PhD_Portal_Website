@@ -33,7 +33,7 @@ const Registration_page = ({ children }) => {
       {/* Header */}
       <header className="bg-white shadow p-4 flex justify-between items-center">
         <img src={KJSSE} alt="Somaiya Logo" className="h-10" />
-        <h1 className="text-3xl font-bold text-[#B7202E] mr-20">Shodh Ganga</h1>{/* !!! added right margin - 20 (mr-20) to center the text temporarily  */}
+        <h1 className="text-3xl font-bold text-[#B7202E] mr-20">PhD Portal</h1>{/* !!! added right margin - 20 (mr-20) to center the text temporarily  */}
         <img src={Somaiya_Trust} alt="Somaiya Trust" className="h-10" />
       </header>
 
