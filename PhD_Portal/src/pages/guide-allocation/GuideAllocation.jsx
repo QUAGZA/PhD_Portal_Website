@@ -60,7 +60,11 @@ const GuideAllocation = () => {
 
   // Mock guides data - replace with API call in production
   const guides = [
-    { id: "g1", title: "Dr.", name: "ABC DEF", researchAreas: ["AI", "ML"] },
+    { 
+      id: "g1", 
+      title: "Dr.", 
+      name: "ABC DEF", 
+      researchAreas: ["AI", "ML"] },
     {
       id: "g2",
       title: "Dr.",
@@ -256,7 +260,7 @@ const GuideAllocation = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left side - Preference Selection */}
         <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <CardHeader className="bg-[#B7202E] text-white">
+          <CardHeader className="bg-[#B7202E] text-white p-4">
             <CardTitle>Guide Preferences</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -418,7 +422,7 @@ const GuideAllocation = () => {
 
         {/* Right side - Info and Download */}
         <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <CardHeader className="bg-[#B7202E] text-white">
+          <CardHeader className="bg-[#B7202E] text-white p-4">
             <CardTitle>Guide Information</CardTitle>
           </CardHeader>
           <CardContent className="p-6 flex flex-col h-full">

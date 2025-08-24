@@ -24,8 +24,8 @@ export function NavMain({ items }) {
                 asChild
                 className={`group ${
                   isActive
-                    ? "bg-[#ffffff] text-[#] hover:bg-[#ffffff]"
-                    : "hover:text-[#000000] hover:bg-muted hover:bg-[#f0f0f0]/50"
+                    ? "bg-[#ffffff] text-[#B7202E] hover:bg-[#ffffff]"
+                    : "text-white hover:text-[#000000] hover:bg-muted hover:bg-[#f0f0f0]/50"
                 }`}
               >
                 <NavLink
