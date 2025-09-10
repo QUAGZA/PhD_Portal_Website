@@ -4,6 +4,7 @@ import educationDetailsReducer from "../Registration_page/Educational_details/ed
 import courseDetailsReducer from "../Registration_page/Course_details/courseDetailsSlice";
 import studentDashboardReducer from "../pages/dashboard/studentDashboardSlice";
 import authReducer from "./slices/authSlice";
+import assignmentReducer from "./slices/assignmentSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     courseDetails: courseDetailsReducer,
     studentDashboard: studentDashboardReducer,
     auth: authReducer,
+    assignments: assignmentReducer,
   },
 });

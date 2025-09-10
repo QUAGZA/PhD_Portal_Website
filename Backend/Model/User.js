@@ -113,6 +113,7 @@ const userSchema = new mongoose.Schema(
       semester: { type: String },
       guideName: { type: String },
       guideEmail: { type: String },
+      guideId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       status: { type: String },
       domain: { type: String },
       topic: { type: String },
@@ -121,10 +122,16 @@ const userSchema = new mongoose.Schema(
       scholarship: { type: String },
     },
 
-    role: {
-      type: String,
+    roles: {
+      type: [String],
       enum: ["Student", "Guide", "Admin"],
-      default: "Student",
+      default: ["Student"],
+      validate: {
+        validator: function (roles) {
+          return roles.length > 0;
+        },
+        message: "User must have at least one role",
+      },
     },
 
     registrationComplete: {

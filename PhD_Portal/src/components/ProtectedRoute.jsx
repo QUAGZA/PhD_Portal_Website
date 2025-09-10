@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { checkAuthStatus } from "../redux/slices/authSlice";
@@ -29,7 +29,9 @@ const ProtectedRoute = ({ children, role = null }) => {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin mx-auto text-[#B7202E]" />
-          <h2 className="mt-4 text-xl font-medium">Verifying your session...</h2>
+          <h2 className="mt-4 text-xl font-medium">
+            Verifying your session...
+          </h2>
         </div>
       </div>
     );
@@ -40,22 +42,28 @@ const ProtectedRoute = ({ children, role = null }) => {
     return <Navigate to="/" state={{ from: location.pathname }} replace />;
   }
 
-  if (role && user?.role !== role) {
-    // User doesn't have the required role, redirect based on their actual role
-    const redirectPath = (() => {
-      switch (user?.role) {
-        case "Student":
-          return "/student/dashboard";
-        case "Guide":
-          return "/guide/dashboard";
-        case "Admin":
-          return "/faculty-coordinator/dashboard";
-        default:
-          return "/";
-      }
-    })();
+  if (role && user?.roles) {
+    // Check if user has the required role in their roles array
+    const hasRequiredRole = user.roles.includes(role);
 
-    return <Navigate to={redirectPath} replace />;
+    if (!hasRequiredRole) {
+      // User doesn't have the required role, redirect based on their primary role (first role)
+      const primaryRole = user.roles[0];
+      const redirectPath = (() => {
+        switch (primaryRole) {
+          case "Student":
+            return "/student/dashboard";
+          case "Guide":
+            return "/guide/dashboard";
+          case "Admin":
+            return "/faculty-coordinator/dashboard";
+          default:
+            return "/";
+        }
+      })();
+
+      return <Navigate to={redirectPath} replace />;
+    }
   }
 
   return children;

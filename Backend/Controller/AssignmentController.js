@@ -4,7 +4,20 @@ const User = require("../Model/User");
 
 async function createAssignment(req, res) {
   try {
-    const { title, description, deadline, attachments } = req.body;
+    const { title, description, deadline } = req.body;
+
+    // Handle file attachments
+    const attachments = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file) => {
+        attachments.push({
+          filename: file.originalname,
+          path: file.filename,
+          mimetype: file.mimetype,
+          size: file.size,
+        });
+      });
+    }
 
     const assignment = await Assignment.create({
       title,
@@ -76,7 +89,7 @@ async function getAssignmentById(req, res) {
 
 async function submitAssignment(req, res) {
   try {
-    const { assignmentId, attachments } = req.body;
+    const { assignmentId } = req.body;
 
     const existing = await Submission.findOne({
       assignment: assignmentId,
@@ -86,6 +99,19 @@ async function submitAssignment(req, res) {
       return res
         .status(400)
         .json({ success: false, message: "Already submitted" });
+
+    // Handle file attachments
+    const attachments = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file) => {
+        attachments.push({
+          filename: file.originalname,
+          path: file.filename,
+          mimetype: file.mimetype,
+          size: file.size,
+        });
+      });
+    }
 
     const submission = await Submission.create({
       assignment: assignmentId,
@@ -125,7 +151,7 @@ async function gradeSubmission(req, res) {
 async function getSubmissionsForAssignment(req, res) {
   try {
     const submissions = await Submission.find({
-      assignment: req.params.assignmentId,
+      assignment: req.params.id,
     }).populate("student", "name email");
 
     res.json({ success: true, data: submissions });
@@ -136,7 +162,7 @@ async function getSubmissionsForAssignment(req, res) {
 
 async function getListOfNonSubmissions(req, res) {
   try {
-    const { assignmentId } = req.params;
+    const assignmentId = req.params.id;
 
     const user = await User.findById(req.user._id);
 

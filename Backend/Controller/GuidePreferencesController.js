@@ -47,8 +47,8 @@ exports.submitGuidePreferences = async (req, res) => {
       researchArea2: preferences.preference2.researchArea,
       preference3: preferences.preference3.guideName,
       researchArea3: preferences.preference3.researchArea,
-      createdBy: user._id  
-    })
+      createdBy: user._id,
+    });
     await pref.save();
 
     // Create PDF document

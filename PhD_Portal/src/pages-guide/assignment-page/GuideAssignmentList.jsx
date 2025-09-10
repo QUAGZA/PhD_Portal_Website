@@ -1,32 +1,44 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import GuideAssignmentCard from "./GuideAssignmentCard";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Megaphone } from "lucide-react";
-
-const guideAssignments = [
-  {
-    id: "1",
-    title: "Experiment 1 - Process Scheduling",
-    deadline: "31/05/2025",
-    attachments: [{ name: "Exp_1.pdf", url: "#" }],
-    submissionsCount: 9,
-    totalStudents: 10,
-  },
-  {
-    id: "2",
-    title: "Experiment 2 - Disk Scheduling",
-    deadline: "31/05/2025",
-    attachments: [
-      { name: "Exp_2.pdf", url: "#" },
-      { name: "Sheet.xls", url: "#" },
-    ],
-    submissionsCount: 6,
-    totalStudents: 10,
-  },
-];
+import CreateAssignmentForm from "./CreateAssignmentForm";
+import {
+  fetchAssignmentsByGuideId,
+  selectGuideAssignments,
+  selectAssignmentLoading,
+  selectAssignmentError,
+  createAssignment,
+  selectCreateLoading,
+} from "@/redux/slices/assignmentSlice";
 
 export default function GuideAssignmentList() {
+  const dispatch = useDispatch();
+  const assignments = useSelector(selectGuideAssignments);
+  const loading = useSelector(selectAssignmentLoading);
+  const error = useSelector(selectAssignmentError);
+  const createLoading = useSelector(selectCreateLoading);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchAssignmentsByGuideId());
+  }, [dispatch]);
+
+  const handleCreateAssignment = () => {
+    setShowCreateForm(true);
+  };
+
+  const handlePostAnnouncement = () => {
+    if (announcement.trim()) {
+      console.log("Posting announcement:", announcement);
+      setAnnouncement("");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/50">
       <div className="max-w-7xl mx-auto p-6">
@@ -42,19 +54,51 @@ export default function GuideAssignmentList() {
                   Manage and track student assignments
                 </p>
               </div>
-              <Button className="bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
+              <Button
+                onClick={handleCreateAssignment}
+                className="bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Assignment
               </Button>
             </div>
 
             <div>
-              {guideAssignments.map((assignment) => (
-                <GuideAssignmentCard
-                  key={assignment.id}
-                  assignment={assignment}
-                />
-              ))}
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-500">Loading assignments...</div>
+                </div>
+              ) : error ? (
+                <div className="text-center py-12">
+                  <div className="text-red-500 mb-4">Error: {error}</div>
+                  <Button
+                    onClick={() => dispatch(fetchAssignmentsByGuideId())}
+                    variant="outline"
+                  >
+                    Retry
+                  </Button>
+                </div>
+              ) : assignments && assignments.length > 0 ? (
+                assignments.map((assignment) => (
+                  <GuideAssignmentCard
+                    key={assignment._id}
+                    assignment={assignment}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-gray-500 mb-4">
+                    No assignments created yet
+                  </div>
+                  <Button
+                    onClick={handleCreateAssignment}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Your First Assignment
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -70,9 +114,15 @@ export default function GuideAssignmentList() {
               <CardContent>
                 <Textarea
                   placeholder="Write to students..."
+                  value={announcement}
+                  onChange={(e) => setAnnouncement(e.target.value)}
                   className="min-h-[150px] border-gray-200 focus:border-red-300 focus:ring-red-200 resize-none"
                 />
-                <Button className="w-full mt-4 bg-amber-500 hover:bg-amber-600 text-white">
+                <Button
+                  onClick={handlePostAnnouncement}
+                  disabled={!announcement.trim()}
+                  className="w-full mt-4 bg-amber-500 hover:bg-amber-600 text-white disabled:bg-gray-400"
+                >
                   Post Announcement
                 </Button>
               </CardContent>
@@ -80,6 +130,12 @@ export default function GuideAssignmentList() {
           </div>
         </div>
       </div>
+
+      {/* Create Assignment Form Modal */}
+      <CreateAssignmentForm
+        open={showCreateForm}
+        onClose={() => setShowCreateForm(false)}
+      />
     </div>
   );
 }

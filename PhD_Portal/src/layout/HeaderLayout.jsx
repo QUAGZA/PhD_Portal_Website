@@ -1,5 +1,6 @@
 import somaiyaLogo from "../assets/SVU_KJSCE.png";
 import trustLogo from "../assets/Somaiya_Trust.png";
+import RoleSelector from "../components/RoleSelector";
 
 const HeaderLayout = () => {
   return (
@@ -10,7 +11,10 @@ const HeaderLayout = () => {
           <h1 className="text-xl font-semibold text-[#B7202E] text-center">
             PhD Portal
           </h1>
-          <img src={trustLogo} alt="Trust Logo" className="h-10" />
+          <div className="flex items-center space-x-4">
+            <RoleSelector />
+            <img src={trustLogo} alt="Trust Logo" className="h-10" />
+          </div>
         </div>
       </header>
     </div>

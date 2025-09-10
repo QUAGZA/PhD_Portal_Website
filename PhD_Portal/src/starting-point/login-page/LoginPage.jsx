@@ -41,8 +41,10 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && user && !isCheckingAuth) {
-      // Redirect based on user role
-      const from = location.state?.from || getDefaultRoute(user.role);
+      // Redirect based on user role (using the first role in the array as primary)
+      const primaryRole =
+        user.roles && user.roles.length > 0 ? user.roles[0] : "Student";
+      const from = location.state?.from || getDefaultRoute(primaryRole);
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, user, isCheckingAuth, navigate, location]);

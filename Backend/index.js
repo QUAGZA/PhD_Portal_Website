@@ -7,10 +7,13 @@ const path = require("path");
 const { connectMongoDB } = require("./utility/connection");
 const { jsonParser } = require("./middlewares/index");
 require("./config/passport");
+// const migrateRolesToArray = require("./migrations/migrateRolesToArray");
 const authRoutes = require("./routes/auth");
 const registrationRoutes = require("./routes/registration");
 const documentsRoutes = require("./routes/documents");
 const guidePreferencesRoutes = require("./routes/guidePreferences");
+const assignmentRoutes = require("./routes/AssignmentRoutes");
+const userRoutes = require("./routes/users");
 
 dotenv.config();
 const app = express();
@@ -26,7 +29,15 @@ app.use(
 );
 
 connectMongoDB(mongoURI)
-  .then(() => console.log("MongoDB Connected!!"))
+  .then(() => {
+    console.log("MongoDB Connected!!");
+    // // Run migration to update user roles from string to array
+    // setTimeout(() => {
+    //   migrateRolesToArray()
+    //     .then(() => console.log("Role migration completed"))
+    //     .catch((err) => console.error("Role migration failed:", err));
+    // }, 1000); // Give MongoDB connection a moment to fully establish
+  })
   .catch((err) => console.log("Error, Can't connect to DB", err));
 
 app.use(jsonParser());
@@ -50,6 +61,8 @@ app.use("/auth", authRoutes);
 app.use("/registration", registrationRoutes);
 app.use("/documents", documentsRoutes);
 app.use("/guide-preferences", guidePreferencesRoutes);
+app.use("/assignments", assignmentRoutes);
+app.use("/users", userRoutes);
 
 // fetch('http://localhost:9999/dashboard', {
 //     method: 'GET',

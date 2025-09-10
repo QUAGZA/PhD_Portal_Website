@@ -23,22 +23,32 @@ const storage = multer.diskStorage({
     const uploadType = req.baseUrl.includes("assignment")
       ? "assignments"
       : "documents";
-    // const rollNumber = req.user.personal; ||
-    // req.body.rollNumber ||
-    // req.user._id.toString();
-    //
-    // Use aadhar from request body
-    const aadhar = req.body.aadhar;
-    if (!aadhar) {
-      console.error("Aadhar number missing in request");
-      return cb(
-        new Error("Aadhar number is required for document upload"),
-        null,
-      );
+
+    let userIdentifier;
+
+    // For assignments, use user ID from authenticated user
+    if (uploadType === "assignments") {
+      userIdentifier = req.user._id.toString();
+    } else {
+      // For documents during registration, use aadhar
+      const aadhar = req.body.aadhar;
+      if (!aadhar) {
+        console.error("Aadhar number missing in request");
+        return cb(
+          new Error("Aadhar number is required for document upload"),
+          null,
+        );
+      }
+      userIdentifier = aadhar;
     }
 
-    // Create user-specific folder using rollNumber
-    const userDir = path.join(__dirname, "../uploads", uploadType, aadhar);
+    // Create user-specific folder
+    const userDir = path.join(
+      __dirname,
+      "../uploads",
+      uploadType,
+      userIdentifier,
+    );
 
     if (!fs.existsSync(userDir)) {
       fs.mkdirSync(userDir, { recursive: true });
@@ -59,15 +69,39 @@ const storage = multer.diskStorage({
 
 // File filter
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = [".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"];
+  const uploadType = req.baseUrl.includes("assignment")
+    ? "assignments"
+    : "documents";
+
+  let allowedTypes;
+
+  if (uploadType === "assignments") {
+    // More lenient file types for assignments
+    allowedTypes = [
+      ".pdf",
+      ".doc",
+      ".docx",
+      ".txt",
+      ".zip",
+      ".rar",
+      ".jpg",
+      ".jpeg",
+      ".png",
+    ];
+  } else {
+    // Strict file types for documents
+    allowedTypes = [".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"];
+  }
+
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (allowedTypes.includes(ext)) {
     cb(null, true);
   } else {
+    const allowedTypesStr = allowedTypes.join(", ").toUpperCase();
     cb(
       new Error(
-        "Invalid file type. Only PDF, DOC, DOCX, JPG, JPEG, PNG allowed.",
+        `Invalid file type. Only ${allowedTypesStr} files are allowed.`,
       ),
       false,
     );
@@ -77,7 +111,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB per file
+    fileSize: 10 * 1024 * 1024, // 10MB per file for assignments, 5MB for documents
   },
   fileFilter: fileFilter,
 });

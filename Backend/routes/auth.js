@@ -23,10 +23,16 @@ router.get(
 // Check authentication status
 router.get("/status", (req, res) => {
   if (req.isAuthenticated()) {
+    // Handle backwards compatibility for users that might not have been migrated yet
+    const user = req.user;
+    if (user.role && !user.roles) {
+      user.roles = [user.role];
+    }
+
     return res.json({
       isAuthenticated: true,
-      user: req.user,
-      needsRegistration: !req.user.registrationComplete,
+      user: user,
+      needsRegistration: !user.registrationComplete,
     });
   } else {
     return res.json({
@@ -42,7 +48,14 @@ router.get("/profile", (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Not authenticated" });
   }
-  res.json({ user: req.user });
+
+  // Handle backwards compatibility for users that might not have been migrated yet
+  const user = req.user;
+  if (user.role && !user.roles) {
+    user.roles = [user.role];
+  }
+
+  res.json({ user: user });
 });
 
 // Success endpoint
@@ -52,11 +65,27 @@ router.get("/success", (req, res) => {
   }
   const needsRegistration = !req.user.registrationComplete;
 
-  res.redirect(
-    needsRegistration
-      ? "http://localhost:5173/register"
-      : "http://localhost:5173/student/dashboard",
-  );
+  if (needsRegistration) {
+    return res.redirect("http://localhost:5173/register");
+  }
+
+  // Redirect based on user's primary role (first role in the array)
+  const primaryRole =
+    req.user.roles && req.user.roles.length > 0 ? req.user.roles[0] : "Student";
+  const redirectPath = (() => {
+    switch (primaryRole) {
+      case "Student":
+        return "http://localhost:5173/student/dashboard";
+      case "Guide":
+        return "http://localhost:5173/guide/dashboard";
+      case "Admin":
+        return "http://localhost:5173/faculty-coordinator/dashboard";
+      default:
+        return "http://localhost:5173/student/dashboard";
+    }
+  })();
+
+  res.redirect(redirectPath);
 });
 
 // Failure endpoint

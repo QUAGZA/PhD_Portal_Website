@@ -4,11 +4,23 @@ import { Calendar, FileText, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function GuideAssignmentCard({ assignment }) {
-  const submissionRate =
-    (assignment.submissionsCount / assignment.totalStudents) * 100;
+  // For now, we'll use placeholder values since submission count isn't in the assignment data
+  // This would need to be fetched separately or included in the assignment response
+  const submissionRate = 0; // Placeholder - would come from actual submission data
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
-    <Link to={`/guide/assignments/${assignment.id}`}>
+    <Link to={`/guide/assignments/${assignment._id}`}>
       <Card className="group hover:shadow-lg transition-all duration-200 border-0 shadow-sm hover:shadow-red-100/50 bg-white mb-6">
         <CardContent className="p-6">
           <div className="flex justify-between items-start mb-4">
@@ -20,18 +32,22 @@ export default function GuideAssignmentCard({ assignment }) {
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-gray-600">
                   <Calendar className="w-4 h-4 mr-2 text-red-500" />
-                  <span>Due: {assignment.deadline}</span>
+                  <span>Due: {formatDate(assignment.deadline)}</span>
                 </div>
 
                 <div className="flex items-center text-sm text-gray-600">
                   <FileText className="w-4 h-4 mr-2 text-amber-500" />
                   <span>
-                    {assignment.attachments[0]?.name || "No attachments"}
-                    {assignment.attachments.length > 1 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        +{assignment.attachments.length - 1}
-                      </Badge>
-                    )}
+                    {assignment.attachments && assignment.attachments.length > 0
+                      ? assignment.attachments[0]?.filename ||
+                        "Attachments available"
+                      : "No attachments"}
+                    {assignment.attachments &&
+                      assignment.attachments.length > 1 && (
+                        <Badge variant="secondary" className="ml-2 text-xs">
+                          +{assignment.attachments.length - 1}
+                        </Badge>
+                      )}
                   </span>
                 </div>
               </div>
@@ -40,9 +56,7 @@ export default function GuideAssignmentCard({ assignment }) {
             <div className="text-right ml-4">
               <div className="flex items-center text-sm text-gray-600 mb-2">
                 <Users className="w-4 h-4 mr-1 text-red-500" />
-                <span className="font-medium">
-                  {assignment.submissionsCount}/{assignment.totalStudents}
-                </span>
+                <span className="font-medium">0/0</span>
               </div>
 
               <div className="w-16 bg-gray-200 rounded-full h-2">
