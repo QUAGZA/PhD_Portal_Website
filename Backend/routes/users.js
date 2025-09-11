@@ -6,6 +6,7 @@ const {
   addRoleToUser,
   removeRoleFromUser,
   updatePrimaryRole,
+  getFacultyCoordinators,
 } = require("../Controller/UserController");
 const isLoggedIn = require("../middlewares/OAuth2IsLoggedIn");
 const authorizedRoles = require("../middlewares/roleAuthenticator");
@@ -19,5 +20,10 @@ router.get("/:id", authorizedRoles("Admin"), getUserById);
 router.post("/:id/roles", authorizedRoles("Admin"), addRoleToUser);
 router.delete("/:id/roles", authorizedRoles("Admin"), removeRoleFromUser);
 router.put("/:id/primary-role", authorizedRoles("Admin"), updatePrimaryRole);
+router.get(
+  "/faculty-coordinators",
+  authorizedRoles("Admin"),
+  getFacultyCoordinators,
+);
 
 module.exports = router;

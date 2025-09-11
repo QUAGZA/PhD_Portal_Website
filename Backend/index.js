@@ -7,13 +7,15 @@ const path = require("path");
 const { connectMongoDB } = require("./utility/connection");
 const { jsonParser } = require("./middlewares/index");
 require("./config/passport");
-// const migrateRolesToArray = require("./migrations/migrateRolesToArray");
+const migrateRolesToArray = require("./migrations/migrateRolesToArray");
+const migrateGuideAssignments = require("./migrations/migrateGuideAssignments");
 const authRoutes = require("./routes/auth");
 const registrationRoutes = require("./routes/registration");
 const documentsRoutes = require("./routes/documents");
 const guidePreferencesRoutes = require("./routes/guidePreferences");
 const assignmentRoutes = require("./routes/AssignmentRoutes");
 const userRoutes = require("./routes/users");
+const guideAssignmentRoutes = require("./routes/guideAssignment");
 
 dotenv.config();
 const app = express();
@@ -32,11 +34,15 @@ connectMongoDB(mongoURI)
   .then(() => {
     console.log("MongoDB Connected!!");
     // // Run migration to update user roles from string to array
-    // setTimeout(() => {
-    //   migrateRolesToArray()
-    //     .then(() => console.log("Role migration completed"))
-    //     .catch((err) => console.error("Role migration failed:", err));
-    // }, 1000); // Give MongoDB connection a moment to fully establish
+    setTimeout(() => {
+      migrateRolesToArray()
+        .then(() => {
+          console.log("Role migration completed");
+          return migrateGuideAssignments();
+        })
+        .then(() => console.log("Guide assignment migration completed"))
+        .catch((err) => console.error("Migration failed:", err));
+    }, 1000); // Give MongoDB connection a moment to fully establish
   })
   .catch((err) => console.log("Error, Can't connect to DB", err));
 
@@ -63,6 +69,7 @@ app.use("/documents", documentsRoutes);
 app.use("/guide-preferences", guidePreferencesRoutes);
 app.use("/assignments", assignmentRoutes);
 app.use("/users", userRoutes);
+app.use("/guide-assignment", guideAssignmentRoutes);
 
 // fetch('http://localhost:9999/dashboard', {
 //     method: 'GET',

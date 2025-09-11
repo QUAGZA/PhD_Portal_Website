@@ -19,22 +19,29 @@ const RoleSelector = ({ className = "" }) => {
       icon: BookOpen,
       path: "/student/dashboard",
       color: "text-blue-600",
-      bgColor: "bg-blue-50 hover:bg-blue-100"
+      bgColor: "bg-blue-50 hover:bg-blue-100",
     },
     Guide: {
       label: "Guide",
       icon: User,
       path: "/guide/dashboard",
       color: "text-green-600",
-      bgColor: "bg-green-50 hover:bg-green-100"
+      bgColor: "bg-green-50 hover:bg-green-100",
     },
-    Admin: {
+    FacultyCoordinator: {
       label: "Faculty Coordinator",
       icon: Shield,
       path: "/faculty-coordinator/dashboard",
+      color: "text-purple-600",
+      bgColor: "bg-purple-50 hover:bg-purple-100",
+    },
+    Admin: {
+      label: "Admin",
+      icon: Shield,
+      path: "/admin/dashboard",
       color: "text-red-600",
-      bgColor: "bg-red-50 hover:bg-red-100"
-    }
+      bgColor: "bg-red-50 hover:bg-red-100",
+    },
   };
 
   const handleRoleSwitch = (role) => {
@@ -49,7 +56,9 @@ const RoleSelector = ({ className = "" }) => {
     const currentPath = window.location.pathname;
     if (currentPath.startsWith("/student")) return "Student";
     if (currentPath.startsWith("/guide")) return "Guide";
-    if (currentPath.startsWith("/faculty-coordinator")) return "Admin";
+    if (currentPath.startsWith("/faculty-coordinator"))
+      return "FacultyCoordinator";
+    if (currentPath.startsWith("/admin")) return "Admin";
     return user.roles[0]; // fallback to primary role
   };
 
@@ -104,10 +113,7 @@ const RoleSelector = ({ className = "" }) => {
 
       {/* Overlay to close dropdown when clicking outside */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
       )}
     </div>
   );

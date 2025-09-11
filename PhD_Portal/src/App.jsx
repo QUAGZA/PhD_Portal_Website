@@ -29,6 +29,8 @@ import GuideProfile from "./pages-guide/profile-page/GuideProfile.jsx";
 import FacultyLayout from "./layout/FacultyLayout.jsx";
 import FacultyDashboard from "./pages-faculty-coordinator/dashaboard/FacultyDashboard.jsx";
 import FacultyProfile from "./pages-faculty-coordinator/profile-page/FacultyProfile.jsx";
+import AdminLayout from "./layout/AdminLayout.jsx";
+import AdminDashboard from "./pages-admin/dashboard/AdminDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
@@ -97,13 +99,24 @@ const App = () => {
             <Route
               path="/faculty-coordinator"
               element={
-                <ProtectedRoute role="Admin">
+                <ProtectedRoute role="FacultyCoordinator">
                   <FacultyLayout />
                 </ProtectedRoute>
               }
             >
               <Route path="dashboard" element={<FacultyDashboard />} />
               <Route path="profile" element={<FacultyProfile />} />
+            </Route>
+
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute role="Admin">
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<AdminDashboard />} />
             </Route>
           </Routes>
         </div>

@@ -78,8 +78,10 @@ router.get("/success", (req, res) => {
         return "http://localhost:5173/student/dashboard";
       case "Guide":
         return "http://localhost:5173/guide/dashboard";
-      case "Admin":
+      case "FacultyCoordinator":
         return "http://localhost:5173/faculty-coordinator/dashboard";
+      case "Admin":
+        return "http://localhost:5173/admin/dashboard";
       default:
         return "http://localhost:5173/student/dashboard";
     }

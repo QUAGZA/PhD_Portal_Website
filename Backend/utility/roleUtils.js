@@ -42,7 +42,7 @@ const hasRole = (user, requiredRoles) => {
   // Convert single role string to array
   const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
 
-  return normalizedUser.roles.some(role => roles.includes(role));
+  return normalizedUser.roles.some((role) => roles.includes(role));
 };
 
 /**
@@ -75,11 +75,14 @@ const removeRole = (user, roleToRemove) => {
   const normalizedUser = normalizeUserRoles(user);
 
   // If removing would leave no roles, return unchanged
-  if (normalizedUser.roles.length === 1 && normalizedUser.roles[0] === roleToRemove) {
+  if (
+    normalizedUser.roles.length === 1 &&
+    normalizedUser.roles[0] === roleToRemove
+  ) {
     return normalizedUser.roles;
   }
 
-  return normalizedUser.roles.filter(role => role !== roleToRemove);
+  return normalizedUser.roles.filter((role) => role !== roleToRemove);
 };
 
 /**
@@ -99,5 +102,5 @@ module.exports = {
   hasRole,
   addRole,
   removeRole,
-  getPrimaryRole
+  getPrimaryRole,
 };

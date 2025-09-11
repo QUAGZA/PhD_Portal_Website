@@ -111,9 +111,30 @@ const userSchema = new mongoose.Schema(
       institute: { type: String },
       enrollmentYear: { type: String },
       semester: { type: String },
+      // Guide assignment - using ObjectId reference for better data integrity
+      guideId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        validate: {
+          validator: async function (value) {
+            if (!value) return true; // Optional field
+            const User = mongoose.model("User");
+            const guide = await User.findById(value);
+            return guide && guide.roles && guide.roles.includes("Guide");
+          },
+          message: "Referenced user must exist and have Guide role",
+        },
+      },
+      // Legacy fields - kept for backward compatibility
       guideName: { type: String },
       guideEmail: { type: String },
-      guideId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      // Guide assignment status
+      guideAssignmentStatus: {
+        type: String,
+        enum: ["Pending", "Assigned", "Changed", "Unassigned"],
+        default: "Unassigned",
+      },
+      guideAssignmentDate: { type: Date },
       status: { type: String },
       domain: { type: String },
       topic: { type: String },
@@ -124,7 +145,7 @@ const userSchema = new mongoose.Schema(
 
     roles: {
       type: [String],
-      enum: ["Student", "Guide", "Admin"],
+      enum: ["Student", "Guide", "FacultyCoordinator", "Admin"],
       default: ["Student"],
       validate: {
         validator: function (roles) {

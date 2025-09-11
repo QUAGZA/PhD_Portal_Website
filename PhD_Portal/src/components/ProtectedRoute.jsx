@@ -55,8 +55,10 @@ const ProtectedRoute = ({ children, role = null }) => {
             return "/student/dashboard";
           case "Guide":
             return "/guide/dashboard";
-          case "Admin":
+          case "FacultyCoordinator":
             return "/faculty-coordinator/dashboard";
+          case "Admin":
+            return "/admin/dashboard";
           default:
             return "/";
         }

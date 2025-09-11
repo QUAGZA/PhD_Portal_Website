@@ -32,32 +32,32 @@ const data = {
     {
       title: "Dashboard",
       url: "/faculty-coordinator/dashboard",
-      icon: House ,
+      icon: House,
       isActive: true,
     },
     {
       title: "Students",
-    //   url: "/guide/students",
+      //   url: "/guide/students",
       icon: Users,
     },
     {
       title: "Schedule",
-    //   url: "/guide/schedule",
+      //   url: "/guide/schedule",
       icon: CalendarDays,
     },
     {
       title: "Assignments",
-    //   url: "/guide/assignments",
+      //   url: "/guide/assignments",
       icon: NotebookPen,
     },
     {
       title: "Forum",
-    //   url: "/guide/forum",
+      //   url: "/guide/forum",
       icon: MessageSquareText,
     },
     {
       title: "Courses",
-    //   url: "/guide/courses",
+      //   url: "/guide/courses",
       icon: BrainCog,
     },
     // {
@@ -69,29 +69,26 @@ const data = {
       title: "Resources",
       url: "/guide/resources",
       icon: BookText,
-  
     },
     {
       title: "Settings",
       url: "/guide/settings",
       icon: Settings,
     },
-  ]
+  ],
 };
-
 
 export default function FacultySidebar(props) {
   return (
-    <Sidebar collapsible="icon" {...props} >
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <NavUser user={data.user} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain}/>
-      <SidebarTrigger className="absolute right-2 bottom-2" />
+        <NavMain items={data.navMain} />
+        <SidebarTrigger className="absolute right-2 bottom-2" />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
   );
 }
-
