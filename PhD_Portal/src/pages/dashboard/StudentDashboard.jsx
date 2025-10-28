@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Bell,
   CalendarIcon,
@@ -11,100 +13,97 @@ import {
   ChevronRight,
   User,
 } from "lucide-react";
+import studentDashboardService from "@/services/studentDashboardService";
 
 export default function StudentDashboard() {
-  const courses = [
-    {
-      id: 1,
-      name: "Machine Learning",
-      semester: "Sem 1 - 2025",
-      faculty: "SWP",
-      credits: 3,
-      progress: 75,
-    },
-    {
-      id: 2,
-      name: "Computer Systems",
-      semester: "Sem 1 - 2025",
-      faculty: "CSS",
-      credits: 2,
-      progress: 60,
-    },
-    {
-      id: 3,
-      name: "Network Security",
-      semester: "Sem 1 - 2025",
-      faculty: "NIS",
-      credits: 3,
-      progress: 85,
-    },
-    {
-      id: 4,
-      name: "Information Theory",
-      semester: "Sem 1 - 2025",
-      faculty: "ITR",
-      credits: 3,
-      progress: 45,
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [progressData, setProgressData] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const assignments = [
-    {
-      id: 1,
-      title: "ML Project Report",
-      course: "Machine Learning",
-      dueDate: "2025-07-01",
-      faculty: "Dr. SWP",
-      status: "pending",
-    },
-    {
-      id: 2,
-      title: "DL Lab 2",
-      course: "Deep Learning",
-      dueDate: "2025-06-28",
-      faculty: "Prof. NIS",
-      status: "submitted",
-    },
-    {
-      id: 3,
-      title: "AI Ethics Essay",
-      course: "AI & Society",
-      dueDate: "2025-07-05",
-      faculty: "Prof. CSS",
-      status: "pending",
-    },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const announcements = [
-    "Sem 1 Orientation",
-    "Guide Allocation",
-    "DAC Formation",
-    "Conference on Technologies",
-    "Seminar on Comp. Science",
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const resources = [
-    "Visit E-library",
-    "Updated Syllabus",
-    "Course Resources",
-    "Past Question Papers",
-  ];
+      const [
+        coursesData,
+        assignmentsData,
+        announcementsData,
+        progressResponse,
+        resourcesData,
+        summaryData,
+      ] = await Promise.all([
+        studentDashboardService.getCourses(),
+        studentDashboardService.getAssignments(),
+        studentDashboardService.getAnnouncements(),
+        studentDashboardService.getProgress(),
+        studentDashboardService.getResources(),
+        studentDashboardService.getSummary(),
+      ]);
 
-  const progressData = [
-    { subject: "ML", progress: 75 },
-    { subject: "DL", progress: 60 },
-    { subject: "AI Ethics", progress: 85 },
-    { subject: "Project", progress: 45 },
-    { subject: "NLP", progress: 70 },
-    { subject: "CV", progress: 90 },
-  ];
+      setCourses(coursesData.courses || []);
+      setAssignments(assignmentsData.assignments || []);
+      setAnnouncements(announcementsData.announcements || []);
+      setProgressData(progressResponse.progressData || []);
+      setResources(resourcesData.resources || []);
+      setSummary(summaryData.summary || null);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError(err.message || "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f9f9f9] p-6">
+        <Skeleton className="h-20 w-full mb-6" />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3 space-y-6">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+          <div className="space-y-6">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
+        <Card className="w-96">
+          <CardContent className="pt-6">
+            <p className="text-red-500 mb-4">{error}</p>
+            <Button onClick={fetchDashboardData} className="w-full">
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f9f9f9]">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 rounded-lg py-4">
         <div className="container mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 rounded-full border border-gray-100">
               <AvatarImage src="/avatar.png" />
               <AvatarFallback className="bg-gray-100">
@@ -112,7 +111,7 @@ export default function StudentDashboard() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-lg font-medium">Hello, Student!</h1>
+              <h1 className="text-lg font-medium">Hello, {summary?.studentName || "Student"}!</h1>
               <p className="text-sm text-gray-500">
                 Welcome back to your dashboard
               </p>
@@ -189,41 +188,47 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {courses.map((course) => (
-                    <div
-                      key={course.id}
-                      className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm"
-                    >
-                      <div className="space-y-2">
-                        <div>
-                          <h3 className="font-medium text-base">
-                            {course.name}
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            {course.semester}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Faculty - {course.faculty}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {course.credits} Credits
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-sm">
-                            <span>Progress</span>
-                            <span>{course.progress}%</span>
+                  {courses.length > 0 ? (
+                    courses.map((course, index) => (
+                      <div
+                        key={index}
+                        className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm"
+                      >
+                        <div className="space-y-2">
+                          <div>
+                            <h3 className="font-medium text-base">
+                              {course.courseName || course.courseCode}
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              {course.semester}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Faculty - {course.faculty}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {course.credits} Credits
+                            </p>
                           </div>
-                          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-[#B7202E] rounded-full"
-                              style={{ width: `${course.progress}%` }}
-                            ></div>
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-sm">
+                              <span>Progress</span>
+                              <span>{course.progress}%</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-[#B7202E] rounded-full"
+                                style={{ width: `${course.progress}%` }}
+                              ></div>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="col-span-4 text-center py-8 text-gray-500">
+                      No courses available
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -293,39 +298,49 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-3">
-                  {assignments.map((assignment) => (
-                    <div
-                      key={assignment.id}
-                      className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg"
-                    >
-                      <div className="space-y-0.5">
-                        <h3 className="text-base font-medium">
-                          {assignment.title}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Course - {assignment.course}
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <CalendarIcon className="h-3 w-3" />
-                            Due: {assignment.dueDate}
-                          </span>
-                          <span>Faculty - {assignment.faculty}</span>
-                        </div>
-                      </div>
-                      <Badge
-                        className={`${
-                          assignment.status === "submitted"
-                            ? "bg-[#B7202E]"
-                            : "bg-[#58595B]"
-                        } text-white rounded px-2 py-0.5 text-sm font-normal`}
+                  {assignments.length > 0 ? (
+                    assignments.map((assignment, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg"
                       >
-                        {assignment.status === "submitted"
-                          ? "Submitted"
-                          : "Pending"}
-                      </Badge>
+                        <div className="space-y-0.5">
+                          <h3 className="text-base font-medium">
+                            {assignment.title}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            Course - {assignment.course}
+                          </p>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <CalendarIcon className="h-3 w-3" />
+                              Due: {assignment.dueDate}
+                            </span>
+                            <span>Faculty - {assignment.faculty}</span>
+                          </div>
+                        </div>
+                        <Badge
+                          className={`${
+                            assignment.status === "submitted"
+                              ? "bg-[#B7202E]"
+                              : assignment.status === "overdue"
+                              ? "bg-red-700"
+                              : "bg-[#58595B]"
+                          } text-white rounded px-2 py-0.5 text-sm font-normal`}
+                        >
+                          {assignment.status === "submitted"
+                            ? "Submitted"
+                            : assignment.status === "overdue"
+                            ? "Overdue"
+                            : "Pending"}
+                        </Badge>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No assignments available
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -459,12 +474,18 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-3">
-                  {announcements.map((announcement, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#58595B] rounded-full flex-shrink-0" />
-                      <span className="text-base">{announcement}</span>
+                  {announcements.length > 0 ? (
+                    announcements.map((announcement, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-[#58595B] rounded-full flex-shrink-0" />
+                        <span className="text-base">{announcement.title}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      No announcements
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -514,12 +535,18 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-3">
-                  {resources.map((resource, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#58595B] rounded-full flex-shrink-0" />
-                      <span className="text-base">{resource}</span>
+                  {resources.length > 0 ? (
+                    resources.map((resource, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-[#58595B] rounded-full flex-shrink-0" />
+                        <span className="text-base">{resource.title}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      No resources available
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>

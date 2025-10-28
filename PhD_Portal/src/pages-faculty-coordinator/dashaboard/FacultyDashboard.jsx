@@ -1,120 +1,159 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { SquareArrowOutUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import ScheduleCard from "./ScheduleCard";
-
-const students = [
-  { name: "Student 1 Name", progress: 80, attendance: 70, batch: "B3" },
-  { name: "Student 2 Name", progress: 80, attendance: 70, batch: "B3" },
-  { name: "Student 3 Name", progress: 30, attendance: 70, batch: "B3" },
-  { name: "Student 4 Name", progress: 80, attendance: 70, batch: "B3" },
-];
-
-const guides = [
-  { name: "Guide 1 Name", progress: 80, batch: "B3" },
-  { name: "Guide 2 Name", progress: 80, batch: "B3" },
-  { name: "Guide 3 Name", progress: 30, batch: "B3" },
-  { name: "Guide 4 Name", progress: 80, batch: "B3" },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { Bell, User } from "lucide-react";
+// import { useState, useEffect } from "react";
+import {
+  FacultyStudentList,
+  FacultyGuideList,
+  FacultySchedule,
+  FacultyAnnouncements
+} from "@/components/faculty-dashboard";
+// import facultyDashboardService from "@/services/facultyDashboardService";
 
 export default function FacultyDashboard() {
-  return (
-    <div className="p-6 space-y-6 font-[Marcellus]">
-      <h2 className="text-2xl font-semibold">
-        Welcome, <span className="text-[#B7202E]">Faculty Co-ordinator Name</span>
-      </h2>
+  // Dummy data for testing - will be replaced with real API calls later
+  const students = [
+    { id: 1, name: "Rahul Sharma", batch: "2023", progress: 85, attendance: 92, guideName: "Dr. Kumar" },
+    { id: 2, name: "Priya Patel", batch: "2023", progress: 78, attendance: 88, guideName: "Dr. Mehta" },
+    { id: 3, name: "Amit Kumar", batch: "2024", progress: 92, attendance: 95, guideName: "Dr. Kumar" },
+    { id: 4, name: "Sneha Desai", batch: "2024", progress: 65, attendance: 80, guideName: "Dr. Singh" },
+    { id: 5, name: "Vikram Singh", batch: "2022", progress: 88, attendance: 90, guideName: "Dr. Mehta" },
+    { id: 6, name: "Anjali Mehta", batch: "2023", progress: 75, attendance: 85, guideName: "Dr. Kumar" },
+  ]
 
-      {/* Top Grid */}
-      <div className="flex justify-around w-full gap-6">
+  const guides = [
+    { id: 1, name: "Dr. Rajesh Kumar", email: "r.kumar@university.edu", studentCount: 6, progress: 82, department: "Computer Science" },
+    { id: 2, name: "Dr. Priya Mehta", email: "p.mehta@university.edu", studentCount: 4, progress: 88, department: "Computer Science" },
+    { id: 3, name: "Dr. Amit Singh", email: "a.singh@university.edu", studentCount: 5, progress: 75, department: "Computer Science" },
+  ]
 
-        <Card className="flex-1 max-h-[300px] overflow-auto">
-          <CardHeader>
-            <CardTitle className="text-lg flex justify-between items-center">
-              Student List
-              <Link to="/guide/students" className="text-muted-foreground hover:text-black">
-                <SquareArrowOutUpRight className="h-4 w-4" />
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col justify-between h-full">
-            {students.map((student, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b py-2 text-sm"
-              >
+  const summary = {
+    facultyName: "Dr. Patel",
+    department: "Computer Science"
+  }
+
+  const loading = false
+  const error = null
+
+  // useEffect(() => {
+  //   fetchDashboardData();
+  // }, []);
+
+  // const fetchDashboardData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+
+  //     const [studentsData, guidesData, summaryData] = await Promise.all([
+  //       facultyDashboardService.getStudents(),
+  //       facultyDashboardService.getGuides(),
+  //       facultyDashboardService.getSummary(),
+  //     ]);
+
+  //     setStudents(studentsData.students || []);
+  //     setGuides(guidesData.guides || []);
+  //     setSummary(summaryData.summary || null);
+  //   } catch (err) {
+  //     console.error("Error fetching dashboard data:", err);
+  //     setError(err.message || "Failed to load dashboard data");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="border-b border-gray-200 bg-white">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
                 <div>
-                  <p className="font-medium">{student.name}</p>
-                  <p className="text-muted-foreground text-xs">
-                    Progress:{" "}
-                    <span className={student.progress < 50 ? "text-red-500" : ""}>
-                      {student.progress}%
-                    </span>
-                    <br />
-                    Attendance: {student.attendance}%
-                  </p>
+                  <Skeleton className="h-6 w-64 mb-2" />
+                  <Skeleton className="h-4 w-48" />
                 </div>
-                <div className="text-sm text-muted-foreground">{`Batch-${student.batch}`}</div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="flex-1 max-h-[300px] overflow-auto">
-          <CardHeader>
-            <CardTitle className="text-lg flex justify-between items-center">
-              Guide List
-              <Link to="/guide/guides" className="text-muted-foreground hover:text-black">
-                <SquareArrowOutUpRight className="h-4 w-4" />
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col justify-between h-full">
-            {guides.map((guide, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b py-2 text-sm"
-              >
-                <div>
-                  <p className="font-medium">{guide.name}</p>
-                  <p className="text-muted-foreground text-xs">
-                    Progress:{" "}
-                    <span className={guide.progress < 50 ? "text-red-500" : ""}>
-                      {guide.progress}%
-                    </span>
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">{`Batch-${guide.batch}`}</div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              <Skeleton className="h-10 w-10 rounded-lg" />
+            </div>
+          </div>
+        </header>
+        <div className="container mx-auto px-6 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <Skeleton className="h-96" />
+            <Skeleton className="h-96" />
+            <div className="lg:col-span-2 space-y-6">
+              <Skeleton className="h-64" />
+              <Skeleton className="h-64" />
+            </div>
+          </div>
+        </div>
       </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 text-lg mb-4">{error}</p>
+          <Button onClick={fetchDashboardData}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
-      {/* My Schedule & Announcements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <ScheduleCard />
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Announcements</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              placeholder="Write to students..."
-              className="resize-none min-h-[120px] text-sm"
-            />
-            <Button className="mt-2 float-right" disabled>
-              🔒 Post (coming soon)
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="/diverse-student-profiles.png" />
+                <AvatarFallback className="bg-red-500 text-white">
+                  <User className="h-5 w-5" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Welcome, <span className="text-red-500">{summary?.facultyName || "Faculty Coordinator"}</span>
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Department: {summary?.department || "N/A"}
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" size="icon" className="border-gray-300 hover:bg-gray-50">
+              <Bell className="h-4 w-4 text-gray-600" />
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Sidebar - Student List */}
+          <div className="lg:col-span-1">
+            <FacultyStudentList students={students} />
+          </div>
+
+          {/* Guide List */}
+          <div className="lg:col-span-1">
+            <FacultyGuideList guides={guides} />
+          </div>
+
+          {/* Center Content - Schedule & Announcements */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Schedule */}
+            <FacultySchedule />
+
+            {/* Announcements */}
+            <FacultyAnnouncements />
+          </div>
+        </div>
       </div>
     </div>
   );

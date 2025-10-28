@@ -29,8 +29,16 @@ import GuideProfile from "./pages-guide/profile-page/GuideProfile.jsx";
 import FacultyLayout from "./layout/FacultyLayout.jsx";
 import FacultyDashboard from "./pages-faculty-coordinator/dashaboard/FacultyDashboard.jsx";
 import FacultyProfile from "./pages-faculty-coordinator/profile-page/FacultyProfile.jsx";
+import FacultyStudentList from "./pages-faculty-coordinator/student-list/FacultyStudentList.jsx";
+import FacultyAssignmentList from "./pages-faculty-coordinator/assignment-page/FacultyAssignmentList.jsx";
+import FacultySchedule from "./pages-faculty-coordinator/schedule-page/FacultySchedule.jsx";
 import AdminLayout from "./layout/AdminLayout.jsx";
 import AdminDashboard from "./pages-admin/dashboard/AdminDashboard.jsx";
+import UserManagement from "./pages-admin/user-management/UserManagement.jsx";
+import GuideAssignments from "./pages-admin/guide-assignments/GuideAssignments.jsx";
+import FacultyCoordinators from "./pages-admin/faculty-coordinators/FacultyCoordinators.jsx";
+import AdminSchedule from "./pages-admin/schedule/AdminSchedule.jsx";
+import Analytics from "./pages-admin/analytics/Analytics.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
@@ -105,6 +113,9 @@ const App = () => {
               }
             >
               <Route path="dashboard" element={<FacultyDashboard />} />
+              <Route path="students" element={<FacultyStudentList />} />
+              <Route path="assignments" element={<FacultyAssignmentList />} />
+              <Route path="schedule" element={<FacultySchedule />} />
               <Route path="profile" element={<FacultyProfile />} />
             </Route>
 
@@ -117,6 +128,11 @@ const App = () => {
               }
             >
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="guide-assignments" element={<GuideAssignments />} />
+              <Route path="faculty-coordinators" element={<FacultyCoordinators />} />
+              <Route path="schedule" element={<AdminSchedule />} />
+              <Route path="analytics" element={<Analytics />} />
             </Route>
           </Routes>
         </div>

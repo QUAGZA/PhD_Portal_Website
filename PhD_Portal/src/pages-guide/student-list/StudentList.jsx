@@ -1,32 +1,64 @@
 import StudentCard from "./StudentCard.jsx"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-
-const students = [
-  {
-    id: "stu001",
-    name: "Student 1 Name",
-    email: "abc@somaiya.edu",
-    domain: "Computer and Tech",
-    progress: 80,
-    attendance: 70,
-    enrollmentId: "1234567890",
-    batch: "Batch-B3",
-  },
-  {
-    id: "stu002",
-    name: "Student 2 Name",
-    email: "abc@somaiya.edu",
-    domain: "Computer and Tech",
-    progress: 30,
-    attendance: 70,
-    enrollmentId: "1234567891",
-    batch: "Batch-B3",
-  },
-  // Add more students...
-]
+import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
+import { getAssignedStudents } from "@/services/guideDashboardService"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Lock } from "lucide-react"
 
 export default function StudentList() {
+  const [students, setStudents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [announcement, setAnnouncement] = useState("")
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true)
+        const data = await getAssignedStudents()
+        setStudents(data.students || [])
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching students:", err)
+        setError("Failed to load students")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStudents()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 font-[Marcellus]">
+        <div className="md:col-span-3">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-8 w-48" />
+            </CardHeader>
+            <CardContent>
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-24 mb-4" />
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-40" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 font-[Marcellus]">
       {/* Student Cards */}
@@ -38,9 +70,17 @@ export default function StudentList() {
             <button className="text-gray-500 hover:text-black">🔍</button>
           </CardHeader>
           <CardContent className="max-h-[70vh] overflow-y-auto pr-2">
-            {students.map((student) => (
-              <StudentCard key={student.id} student={student} />
-            ))}
+            {error ? (
+              <p className="text-red-500 text-center py-4">{error}</p>
+            ) : students.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No students assigned yet
+              </p>
+            ) : (
+              students.map((student) => (
+                <StudentCard key={student.id} student={student} />
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
@@ -51,8 +91,20 @@ export default function StudentList() {
           <CardHeader>
             <CardTitle className="text-lg">Announcements</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Textarea placeholder="Write to students..." className="min-h-[150px]" />
+          <CardContent className="space-y-4">
+            <Textarea
+              placeholder="Write to students..."
+              className="min-h-[150px]"
+              value={announcement}
+              onChange={(e) => setAnnouncement(e.target.value)}
+            />
+            <Button
+              disabled
+              className="w-full bg-gray-300 text-gray-500 hover:bg-gray-300 gap-2"
+            >
+              <Lock className="h-4 w-4" />
+              Post (coming soon)
+            </Button>
           </CardContent>
         </Card>
       </div>

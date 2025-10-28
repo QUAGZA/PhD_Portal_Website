@@ -41,7 +41,7 @@ export default function ScheduleCard() {
 
   return (
     <Card className="lg:col-span-2">
-      <CardHeader className="flex justify-between items-center">
+      <CardHeader className="flex justify-between items-center pt-4 pb-4">
         <CardTitle className="text-lg">My Schedule</CardTitle>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <ChevronLeft className="cursor-pointer" onClick={handlePrev} />

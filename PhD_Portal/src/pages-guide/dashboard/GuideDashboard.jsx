@@ -1,150 +1,190 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { CalendarDays, Edit } from "lucide-react"
-import { SquareArrowOutUpRight } from "lucide-react"
-import { Link } from "react-router-dom"
-import ScheduleCard from "./ScheduleCard"
-const students = [
-  { name: "Student 1 Name", progress: 80, attendance: 70, batch: "B3" },
-  { name: "Student 2 Name", progress: 80, attendance: 70, batch: "B3" },
-  { name: "Student 3 Name", progress: 30, attendance: 70, batch: "B3" },
-  { name: "Student 4 Name", progress: 80, attendance: 70, batch: "B3" },
-]
-
-const assignments = [
-  {
-    title: "Assignment 1",
-    uploaded: "15/06/2025, 2:36pm",
-    deadline: "18/06/2025, 11:59pm",
-    status: "Locked",
-    submissions: "6/10",
-  },
-  {
-    title: "Assignment 2",
-    uploaded: "16/06/2025, 2:36pm",
-    deadline: "20/06/2025, 11:59pm",
-    status: "Unlocked",
-    submissions: "3/10",
-  },
-  {
-    title: "Assignment 1",
-    uploaded: "17/06/2025, 2:36pm",
-    deadline: "24/06/2025, 11:59pm",
-    status: "Unlocked",
-    submissions: "1/10",
-  },
-]
-
-const schedule = [
-  { day: "Sun", date: 15, label: "" },
-  { day: "Mon", date: 16, label: "Check progress of students", color: "bg-red-300" },
-  { day: "Tue", date: 17, label: "Surprise test", color: "bg-orange-300" },
-  { day: "Wed", date: 18, label: "Assignment 1 Deadline", color: "bg-blue-400" },
-  { day: "Thu", date: 19 },
-  { day: "Fri", date: 20, label: "Assignment 2 Deadline", color: "bg-pink-300" },
-  { day: "Sat", date: 21 },
-]
+import { Bell, User } from "lucide-react"
+import {
+  GuideStudentList,
+  GuideAssignments,
+  GuideSchedule,
+  GuideAnnouncements
+} from "@/components/guide-dashboard"
+// import { useState, useEffect } from "react"
+// import {
+//   getAssignedStudents,
+//   getGuideAssignments,
+//   getGuideProfile
+// } from "@/services/guideDashboardService"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function GuideDashboard() {
-  return (
-    <div className="p-6 space-y-6 font-[Marcellus]">
-      <h2 className="text-2xl font-semibold">
-        Welcome, <span className="text-[#B7202E]">Prof. (Educator's Name)</span>
-      </h2>
+  // Dummy data for testing - will be replaced with real API calls later
+  const students = [
+    { id: 1, name: "Rahul Sharma", batch: "Batch-2023", progress: 85, attendance: 92 },
+    { id: 2, name: "Priya Patel", batch: "Batch-2023", progress: 78, attendance: 88 },
+    { id: 3, name: "Amit Kumar", batch: "Batch-2024", progress: 92, attendance: 95 },
+    { id: 4, name: "Sneha Desai", batch: "Batch-2024", progress: 65, attendance: 80 },
+    { id: 5, name: "Vikram Singh", batch: "Batch-2022", progress: 88, attendance: 90 },
+    { id: 6, name: "Anjali Mehta", batch: "Batch-2023", progress: 75, attendance: 85 },
+  ]
 
-      {/* Top Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Student List */}
-        <Card className="max-h-[300px] overflow-auto">
-          <CardHeader>
-            <CardTitle className="text-lg flex justify-between items-center">Student List
-              <Link to="/guide/students" className="text-muted-foreground hover:text-black  ">
-              <SquareArrowOutUpRight className="h-4 w-4" />
-              </Link>
-            </CardTitle>
-            
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {students.map((student, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b pb-2 text-sm"
-              >
-                <div>
-                  <p className="font-medium">{student.name}</p>
-                  <p className="text-muted-foreground text-xs">
-                    Progress:{" "}
-                    <span className={student.progress < 50 ? "text-red-500" : ""}>
-                      {student.progress}%
-                    </span>{" "}
-                    <br />
-                    Attendance: {student.attendance}%
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">{`Batch-${student.batch}`}</div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+  const assignments = [
+    {
+      id: 1,
+      title: "Research Methodology Assignment",
+      uploadedDate: "01/15/2024",
+      deadline: "02/15/2024",
+      status: "unlocked",
+      submissions: 4,
+      totalStudents: 6,
+    },
+    {
+      id: 2,
+      title: "Literature Review Submission",
+      uploadedDate: "12/10/2023",
+      deadline: "01/10/2024",
+      status: "locked",
+      submissions: 6,
+      totalStudents: 6,
+    },
+    {
+      id: 3,
+      title: "Data Analysis Report",
+      uploadedDate: "01/20/2024",
+      deadline: "02/20/2024",
+      status: "unlocked",
+      submissions: 2,
+      totalStudents: 6,
+    },
+    {
+      id: 4,
+      title: "Thesis Proposal Draft",
+      uploadedDate: "01/25/2024",
+      deadline: "03/01/2024",
+      status: "unlocked",
+      submissions: 1,
+      totalStudents: 6,
+    },
+  ]
 
-        {/* Assignments */}
-        <Card className="lg:col-span-2 max-h-[300px] overflow-auto">
-          <CardHeader>
-            <CardTitle className="text-lg flex justify-between items-center">Assignments
-              <Link to="/guide/assignments" className="text-muted-foreground hover:text-black  ">
-              <SquareArrowOutUpRight className="h-4 w-4" />
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {assignments.map((a, idx) => (
-              <div
-                key={idx}
-                className="border rounded p-3 flex justify-between items-start hover:shadow"
-              >
+  const profile = { name: "Dr. Kumar" }
+  const loading = false
+  const error = null
+
+  // useEffect(() => {
+  //   const fetchDashboardData = async () => {
+  //     try {
+  //       setLoading(true)
+
+  //       // Fetch all dashboard data
+  //       const [studentsData, assignmentsData, profileData] = await Promise.all([
+  //         getAssignedStudents(),
+  //         getGuideAssignments(),
+  //         getGuideProfile(),
+  //       ])
+
+  //       setStudents(studentsData.students || [])
+  //       setAssignments(assignmentsData.assignments || [])
+  //       setProfile(profileData.profile || { name: "Educator" })
+  //       setError(null)
+  //     } catch (err) {
+  //       console.error("Error fetching dashboard data:", err)
+  //       setError("Failed to load dashboard data. Please try again.")
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   fetchDashboardData()
+  // }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="border-b border-gray-200 bg-white">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
                 <div>
-                  <p className="font-medium">{a.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Uploaded on {a.uploaded} <br />
-                    Deadline {a.deadline} <br />
-                    Status - {a.status}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <span>Submissions: {a.submissions}</span>
-                  <Edit className="h-4 w-4 ml-1 cursor-pointer hover:text-black" />
+                  <Skeleton className="h-6 w-64 mb-2" />
+                  <Skeleton className="h-4 w-48" />
                 </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
+              <Skeleton className="h-10 w-10 rounded-lg" />
+            </div>
+          </div>
+        </header>
+        <div className="container mx-auto px-6 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <Skeleton className="h-96" />
+            <div className="lg:col-span-2 space-y-6">
+              <Skeleton className="h-64" />
+              <Skeleton className="h-64" />
+            </div>
+            <Skeleton className="h-96" />
+          </div>
+        </div>
       </div>
+    )
+  }
 
-      {/* My Schedule & Announcements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Schedule */}
-            <ScheduleCard />
-        {/* Announcements */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Announcements</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              placeholder="Write to students..."
-              className="resize-none min-h-[120px] text-sm"
-            />
-            <Button className="mt-2 float-right" disabled>
-              🔒 Post (coming soon)
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 text-lg mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="/diverse-student-profiles.png" />
+                <AvatarFallback className="bg-red-500 text-white">
+                  <User className="h-5 w-5" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Welcome, Prof. <span className="text-red-500">{profile.name}</span>
+                </h1>
+                <p className="text-sm text-gray-600">Manage your courses and students</p>
+              </div>
+            </div>
+            <Button variant="outline" size="icon" className="border-gray-300 hover:bg-gray-50">
+              <Bell className="h-4 w-4 text-gray-600" />
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Sidebar - Student List */}
+          <div className="lg:col-span-1">
+            <GuideStudentList students={students} />
+          </div>
+
+          {/* Center Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Assignments */}
+            <GuideAssignments assignments={assignments} />
+
+            {/* Schedule */}
+            <GuideSchedule />
+          </div>
+
+          {/* Right Sidebar - Announcements */}
+          <div className="lg:col-span-1">
+            <GuideAnnouncements />
+          </div>
+        </div>
       </div>
     </div>
   )

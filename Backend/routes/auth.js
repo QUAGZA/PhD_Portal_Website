@@ -58,6 +58,48 @@ router.get("/profile", (req, res) => {
   res.json({ user: user });
 });
 
+// Debug endpoint to check user roles and authentication
+router.get("/debug", (req, res) => {
+  console.log("Auth debug request:", {
+    isAuthenticated: req.isAuthenticated(),
+    user: req.user,
+    session: req.session,
+  });
+
+  if (!req.isAuthenticated()) {
+    return res.json({
+      isAuthenticated: false,
+      user: null,
+      message: "Not authenticated",
+      sessionExists: !!req.session,
+    });
+  }
+
+  const user = req.user;
+  if (user.role && !user.roles) {
+    user.roles = [user.role];
+  }
+
+  res.json({
+    isAuthenticated: true,
+    user: {
+      id: user._id,
+      email: user.email,
+      roles: user.roles,
+      registrationComplete: user.registrationComplete,
+      personalDetails: user.personalDetails,
+    },
+    debug: {
+      hasAdminRole: user.roles && user.roles.includes("Admin"),
+      hasFacultyCoordinatorRole:
+        user.roles && user.roles.includes("FacultyCoordinator"),
+      hasGuideRole: user.roles && user.roles.includes("Guide"),
+      hasStudentRole: user.roles && user.roles.includes("Student"),
+      primaryRole: user.roles ? user.roles[0] : null,
+    },
+  });
+});
+
 // Success endpoint
 router.get("/success", (req, res) => {
   if (!req.isAuthenticated()) {

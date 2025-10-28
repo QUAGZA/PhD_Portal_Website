@@ -4,19 +4,45 @@ const { hasRole } = require("../utility/roleUtils");
 const authorizedRoles = (...allowedRoles) => {
   return async (req, res, next) => {
     const user = await verifyUserAuth(req);
+
+    console.log("Role Authorization Debug:", {
+      requestPath: req.path,
+      allowedRoles: allowedRoles,
+      user: user
+        ? {
+            id: user._id,
+            email: user.email,
+            roles: user.roles,
+            isAuthenticated: !!user,
+          }
+        : null,
+    });
+
     try {
       if (!user) {
-        return res.status(403).json({ message: "Forbidden: Access denied" });
+        console.log("Authorization failed: No user found");
+        return res.status(403).json({
+          message: "Forbidden: Access denied",
+          debug: "User not authenticated",
+        });
       }
 
       // Check if user has at least one of the allowed roles
       if (!hasRole(user, allowedRoles)) {
-        return res.status(403).json({ message: "Forbidden: Access denied" });
+        console.log("Authorization failed: User roles don't match", {
+          userRoles: user.roles,
+          requiredRoles: allowedRoles,
+        });
+        return res.status(403).json({
+          message: "Forbidden: Access denied",
+          debug: `User roles [${user.roles?.join(", ")}] don't include any of [${allowedRoles.join(", ")}]`,
+        });
       }
 
+      console.log("Authorization successful for user:", user.email);
       next();
     } catch (err) {
-      console.error(err);
+      console.error("Role authorization error:", err);
       return res.status(500).json({ error: "Server error" });
     }
   };

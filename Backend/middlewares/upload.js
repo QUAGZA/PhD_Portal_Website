@@ -135,5 +135,8 @@ module.exports = {
   // For assignments - simple multiple files
   uploadAssignments: upload.array("assignments", 5),
 
+  // For general documents (announcements, etc.)
+  uploadDocuments: upload.array("documents", 5),
+
   createUploadsDir,
 };

@@ -16,6 +16,12 @@ const guidePreferencesRoutes = require("./routes/guidePreferences");
 const assignmentRoutes = require("./routes/AssignmentRoutes");
 const userRoutes = require("./routes/users");
 const guideAssignmentRoutes = require("./routes/guideAssignment");
+const adminRoutes = require("./routes/admin");
+const guideDashboardRoutes = require("./routes/guideDashboard");
+const studentDashboardRoutes = require("./routes/studentDashboard");
+const facultyDashboardRoutes = require("./routes/facultyDashboard");
+const scheduleRoutes = require("./routes/schedule");
+const announcementRoutes = require("./routes/announcements");
 
 dotenv.config();
 const app = express();
@@ -70,6 +76,12 @@ app.use("/guide-preferences", guidePreferencesRoutes);
 app.use("/assignments", assignmentRoutes);
 app.use("/users", userRoutes);
 app.use("/guide-assignment", guideAssignmentRoutes);
+app.use("/admin", adminRoutes);
+app.use("/guide/dashboard", guideDashboardRoutes);
+app.use("/student/dashboard", studentDashboardRoutes);
+app.use("/faculty/dashboard", facultyDashboardRoutes);
+app.use("/schedule", scheduleRoutes);
+app.use("/announcements", announcementRoutes);
 
 // fetch('http://localhost:9999/dashboard', {
 //     method: 'GET',
