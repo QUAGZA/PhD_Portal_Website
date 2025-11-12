@@ -28,9 +28,17 @@ const LoginPage = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await dispatch(checkAuthStatus()).unwrap();
+        console.log("Checking auth status...");
+        const result = await Promise.race([
+          dispatch(checkAuthStatus()).unwrap(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Auth check timeout")), 5000)
+          )
+        ]);
+        console.log("Auth check result:", result);
       } catch (error) {
         console.error("Auth check failed:", error);
+        // Continue to login page even if auth check fails
       } finally {
         setIsCheckingAuth(false);
       }
@@ -137,29 +145,117 @@ const LoginPage = () => {
 };
 
 const LoginForm = ({ setShowSignUpDialog }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:9999/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Important for cookies
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Update auth state
+      await dispatch(checkAuthStatus()).unwrap();
+
+      // Redirect based on user role
+      const primaryRole =
+        data.user.roles && data.user.roles.length > 0
+          ? data.user.roles[0]
+          : "Student";
+
+      if (data.needsRegistration) {
+        navigate("/register");
+      } else {
+        switch (primaryRole) {
+          case "Student":
+            navigate("/student/dashboard");
+            break;
+          case "Guide":
+            navigate("/guide/dashboard");
+            break;
+          case "FacultyCoordinator":
+            navigate("/faculty-coordinator/dashboard");
+            break;
+          case "Admin":
+            navigate("/admin/dashboard");
+            break;
+          default:
+            navigate("/student/dashboard");
+        }
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex-1">
-      <input
-        type="text"
-        placeholder="SVV NET ID*"
-        className="w-full p-2 border rounded-md mb-2"
-      />
-      <input
-        type="password"
-        placeholder="Password*"
-        className="w-full p-2 border rounded-md mb-2"
-      />
-      <div className="flex justify-between text-sm mb-4">
-        <label className="flex items-center">
-          <input type="checkbox" className="mr-2 cursor-pointer" /> Remember me
-        </label>
-        <a href="#" className="text-[#B7202E]">
-          forgot password?
-        </a>
-      </div>
-      <button className="w-full bg-[#B7202E] text-white py-2 rounded cursor-pointer">
-        LOGIN
-      </button>
+      {error && (
+        <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email*"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border rounded-md mb-2"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password*"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 border rounded-md mb-2"
+          required
+        />
+        <div className="flex justify-between text-sm mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              className="mr-2 cursor-pointer"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />{" "}
+            Remember me
+          </label>
+          <a href="#" className="text-[#B7202E]">
+            forgot password?
+          </a>
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#B7202E] text-white py-2 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "LOGGING IN..." : "LOGIN"}
+        </button>
+      </form>
       <p className="text-center text-sm mt-4">
         First Time?{" "}
         <a

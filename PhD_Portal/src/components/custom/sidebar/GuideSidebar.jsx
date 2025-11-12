@@ -67,9 +67,9 @@ const data = {
     // },
     {
       title: "Resources",
-      url: "/guide/resources",
+      url: "https://library.somaiya.edu",
       icon: BookText,
-  
+      isExternal: true,
     },
     {
       title: "Settings",

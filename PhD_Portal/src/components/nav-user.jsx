@@ -2,7 +2,9 @@
 
 "use client";
 
-import { Pencil } from "lucide-react";
+import { Pencil, LogOut } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   SidebarMenu,
@@ -11,9 +13,22 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import { logout } from "../redux/slices/authSlice";
 
 export function NavUser({ user }) {
   const { state } = useSidebar();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/");
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -69,6 +84,14 @@ export function NavUser({ user }) {
               </p>
             </div>
           </Link>
+
+          <button
+            onClick={handleLogout}
+            className="mt-2 flex items-center gap-2 text-white hover:text-red-200 transition-colors text-xs"
+          >
+            <LogOut className="h-3 w-3" />
+            Logout
+          </button>
         </SidebarMenuItem>
       )}
     </SidebarMenu>
