@@ -10,18 +10,22 @@
 const normalizeUserRoles = (user) => {
   if (!user) return null;
 
-  const userCopy = { ...user };
-
   // Handle Mongoose document conversion to plain object if needed
-  const userData = userCopy.toObject ? userCopy.toObject() : userCopy;
+  const userData = user.toObject ? user.toObject() : { ...user };
+
+  // Check if roles exist and are an array
+  if (userData.roles && Array.isArray(userData.roles) && userData.roles.length > 0) {
+    return userData;
+  }
 
   // If the user has old role field but no roles array, convert it
-  if (userData.role && (!userData.roles || !Array.isArray(userData.roles))) {
+  if (userData.role && typeof userData.role === 'string') {
     userData.roles = [userData.role];
+    return userData;
   }
 
   // If there's no roles array at all, set default
-  if (!userData.roles) {
+  if (!userData.roles || !Array.isArray(userData.roles) || userData.roles.length === 0) {
     userData.roles = ["Student"];
   }
 
@@ -42,7 +46,19 @@ const hasRole = (user, requiredRoles) => {
   // Convert single role string to array
   const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
 
-  return normalizedUser.roles.some((role) => roles.includes(role));
+  console.log("hasRole check:", {
+    normalizedUserRoles: normalizedUser.roles,
+    requiredRoles: roles,
+    comparison: normalizedUser.roles.map(userRole => ({
+      userRole,
+      matchesAny: roles.some(reqRole => reqRole === userRole)
+    }))
+  });
+
+  const result = normalizedUser.roles.some((role) => roles.includes(role));
+  console.log("hasRole result:", result);
+
+  return result;
 };
 
 /**

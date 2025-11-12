@@ -9,6 +9,20 @@ const { normalizeUserRoles } = require("../utility/roleUtils");
  */
 const getAssignedStudents = async (req, res) => {
   try {
+    console.log("getAssignedStudents called by user:", {
+      userId: req.user?._id,
+      email: req.user?.email,
+      roles: req.user?.roles,
+      isAuthenticated: req.isAuthenticated()
+    });
+
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        message: "User not authenticated",
+        debug: "req.user is missing or invalid"
+      });
+    }
+
     const guideId = req.user._id;
 
     // Find all students assigned to this guide
@@ -99,6 +113,20 @@ const getAssignedStudents = async (req, res) => {
  */
 const getGuideAssignments = async (req, res) => {
   try {
+    console.log("getGuideAssignments called by user:", {
+      userId: req.user?._id,
+      email: req.user?.email,
+      roles: req.user?.roles,
+      isAuthenticated: req.isAuthenticated()
+    });
+
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        message: "User not authenticated",
+        debug: "req.user is missing or invalid"
+      });
+    }
+
     const guideId = req.user._id;
 
     // Get all assignments created by this guide

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
@@ -30,6 +31,19 @@ const userSchema = new mongoose.Schema(
         validator: (v) => /^\S+@\S+\.\S+$/.test(v),
         message: (props) => `${props.value} is not a valid email!`,
       },
+    },
+
+    // Password for local authentication (optional - for Google OAuth users)
+    password: {
+      type: String,
+      select: false, // Don't return password by default in queries
+    },
+
+    // Authentication method
+    authMethod: {
+      type: String,
+      enum: ["local", "google", "both"],
+      default: "local",
     },
 
     personalDetails: {
@@ -165,6 +179,90 @@ const userSchema = new mongoose.Schema(
     collection: "users",
   },
 );
+
+// Indexes for better query performance
+userSchema.index({ email: 1 });
+userSchema.index({ roles: 1 });
+userSchema.index({ "programDetails.guideId": 1 });
+userSchema.index({ "programDetails.department": 1 });
+userSchema.index({ "programDetails.guideAssignmentStatus": 1 });
+
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || !this.password) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  if (!this.password) {
+    return false;
+  }
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Static method to get students by guide
+userSchema.statics.getStudentsByGuide = function (guideId) {
+  return this.find({
+    "programDetails.guideId": guideId,
+    roles: "Student",
+  }).select("-password");
+};
+
+// Static method to get guides by department
+userSchema.statics.getGuidesByDepartment = function (department) {
+  return this.find({
+    "programDetails.department": department,
+    roles: "Guide",
+  }).select("-password");
+};
+
+// Static method to get students by department
+userSchema.statics.getStudentsByDepartment = function (department) {
+  return this.find({
+    "programDetails.department": department,
+    roles: "Student",
+  }).select("-password");
+};
+
+// Static method to get faculty coordinators by department
+userSchema.statics.getFacultyByDepartment = function (department) {
+  return this.find({
+    "programDetails.department": department,
+    roles: "FacultyCoordinator",
+  }).select("-password");
+};
+
+// Instance method to get guide for a student
+userSchema.methods.getMyGuide = async function () {
+  if (!this.roles.includes("Student") || !this.programDetails?.guideId) {
+    return null;
+  }
+  return await this.model("User")
+    .findById(this.programDetails.guideId)
+    .select("-password");
+};
+
+// Instance method to get faculty coordinator for a guide/student
+userSchema.methods.getMyFacultyCoordinator = async function () {
+  if (!this.programDetails?.department) {
+    return null;
+  }
+  return await this.model("User")
+    .findOne({
+      "programDetails.department": this.programDetails.department,
+      roles: "FacultyCoordinator",
+    })
+    .select("-password");
+};
 
 const User = mongoose.model("User", userSchema);
 

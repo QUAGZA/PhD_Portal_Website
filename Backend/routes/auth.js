@@ -1,6 +1,98 @@
 const express = require("express");
 const passport = require("passport");
+const User = require("../Model/User");
 const router = express.Router();
+
+// Local login
+router.post("/login", (req, res, next) => {
+  console.log("=== Login Request Received ===");
+  console.log("Request body:", { email: req.body.email, hasPassword: !!req.body.password });
+
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      console.log("Login error:", err);
+      return res.status(500).json({ message: "Authentication error", error: err.message });
+    }
+    if (!user) {
+      console.log("Login failed:", info?.message);
+      return res.status(401).json({ message: info?.message || "Invalid credentials" });
+    }
+
+    console.log("Passport authenticate successful, logging in user:", user.email);
+
+    req.login(user, (err) => {
+      if (err) {
+        console.log("req.login error:", err);
+        return res.status(500).json({ message: "Login error", error: err.message });
+      }
+
+      // Handle backwards compatibility for roles
+      if (user.role && !user.roles) {
+        user.roles = [user.role];
+      }
+
+      console.log("Login successful!", {
+        userId: user._id,
+        email: user.email,
+        roles: user.roles,
+        sessionID: req.sessionID,
+        isAuthenticated: req.isAuthenticated(),
+      });
+
+      return res.json({
+        message: "Login successful",
+        user: user,
+        needsRegistration: !user.registrationComplete,
+      });
+    });
+  })(req, res, next);
+});
+
+// Local registration
+router.post("/register", async (req, res) => {
+  try {
+    const { email, password, roles } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Create new user
+    const newUser = await User.create({
+      email,
+      password,
+      authMethod: "local",
+      roles: roles || ["Student"],
+      registrationComplete: false,
+    });
+
+    // Log the user in
+    req.login(newUser, (err) => {
+      if (err) {
+        return res.status(500).json({ message: "Registration successful but login failed" });
+      }
+
+      const userObject = newUser.toObject();
+      delete userObject.password;
+
+      res.status(201).json({
+        message: "Registration successful",
+        user: userObject,
+        needsRegistration: true,
+      });
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ message: "Registration failed", error: error.message });
+  }
+});
 
 router.get(
   "/google",

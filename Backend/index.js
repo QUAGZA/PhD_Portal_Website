@@ -58,8 +58,13 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET || "your-session-secret",
     resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 },
+    saveUninitialized: false, // Changed to false for better security
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      httpOnly: true,
+      secure: false, // Set to false for development (localhost)
+      sameSite: 'lax' // Changed from undefined to 'lax' for better CORS support
+    },
   }),
 );
 
@@ -83,18 +88,15 @@ app.use("/faculty/dashboard", facultyDashboardRoutes);
 app.use("/schedule", scheduleRoutes);
 app.use("/announcements", announcementRoutes);
 
-// fetch('http://localhost:9999/dashboard', {
-//     method: 'GET',
-//     credentials: 'include' // 💡 this is crucial
-// })
-
-app.get((req, res) => {
+// Health check endpoint
+app.get("/health", (req, res) => {
   if (req.isAuthenticated()) {
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Authenticated",
+      user: req.user?.email
     });
   } else {
-    return res.status(404).json({ message: "Not Authenticated" });
+    return res.status(200).json({ message: "Not Authenticated" });
   }
 });
 

@@ -2,9 +2,22 @@ const Assignment = require("../Model/Assignment");
 const Submission = require("../Model/Submission");
 const User = require("../Model/User");
 
+/**
+ * Create assignment (Guide only)
+ * Assignment is automatically visible to all students of this guide
+ */
 async function createAssignment(req, res) {
   try {
-    const { title, description, deadline } = req.body;
+    const { title, description, deadline, assignedTo } = req.body;
+    const guideId = req.user._id;
+
+    // Get guide details to extract department
+    const guide = await User.findById(guideId);
+    if (!guide || !guide.roles.includes("Guide")) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Only guides can create assignments" });
+    }
 
     // Handle file attachments
     const attachments = [];
@@ -19,91 +32,302 @@ async function createAssignment(req, res) {
       });
     }
 
+    // Create assignment
     const assignment = await Assignment.create({
       title,
       description,
       deadline,
       attachments,
-      createdBy: req.user._id,
+      createdBy: guideId,
+      department: guide.programDetails?.department,
+      assignedTo: assignedTo || [], // Empty array means visible to all students
     });
 
-    return res.status(201).json({ success: true, data: assignment });
+    // Populate guide info
+    await assignment.populate("createdBy", "personalDetails email");
+
+    return res.status(201).json({
+      success: true,
+      data: assignment,
+      message: "Assignment created successfully"
+    });
   } catch (err) {
+    console.error("Error creating assignment:", err);
     return res.status(500).json({ success: false, message: err.message });
   }
 }
 
+/**
+ * Get all assignments by student's guide (Student only)
+ * Returns assignments created by the student's assigned guide
+ */
 async function getAllAssignmentsByTheGuide(req, res) {
   try {
-    const student = await User.findById(req.user._id).populate(
-      "programDetails.guideId",
-    );
+    const studentId = req.user._id;
 
-    if (!student || !student.programDetails?.guideId) {
+    // Find student and get their guide
+    const student = await User.findById(studentId);
+
+    if (!student || !student.roles.includes("Student")) {
       return res
-        .status(404)
-        .json({ success: false, message: "Guide not assigned" });
+        .status(403)
+        .json({ success: false, message: "Only students can access this" });
     }
 
-    const assignments = await Assignment.find({
-      createdBy: student.programDetails.guideId._id,
-    }).populate("createdBy", "name email");
+    if (!student.programDetails?.guideId) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "No guide assigned yet. Please contact your faculty coordinator."
+        });
+    }
 
-    return res.json({ success: true, data: assignments });
+    const guideId = student.programDetails.guideId;
+
+    // Get all active assignments created by the guide
+    // Either not specifically assigned OR assigned to this student
+    const assignments = await Assignment.find({
+      createdBy: guideId,
+      status: "active",
+      $or: [
+        { assignedTo: { $size: 0 } }, // No specific students = visible to all
+        { assignedTo: studentId }, // Specifically assigned to this student
+      ],
+    })
+      .populate("createdBy", "personalDetails email programDetails")
+      .sort({ deadline: 1 });
+
+    // For each assignment, check if student has submitted
+    const assignmentsWithStatus = await Promise.all(
+      assignments.map(async (assignment) => {
+        const submission = await Submission.findOne({
+          assignment: assignment._id,
+          student: studentId,
+        });
+
+        return {
+          ...assignment.toObject(),
+          submissionStatus: submission ? submission.status : "not_submitted",
+          submissionId: submission ? submission._id : null,
+          submittedAt: submission ? submission.submittedAt : null,
+          grade: submission ? submission.grade : null,
+        };
+      })
+    );
+
+    return res.json({
+      success: true,
+      data: assignmentsWithStatus,
+      count: assignmentsWithStatus.length
+    });
   } catch (err) {
+    console.error("Error fetching student assignments:", err);
     return res.status(500).json({ success: false, message: err.message });
   }
 }
 
-//for guide
+/**
+ * Get assignments created by the guide (Guide only)
+ * Returns all assignments created by the logged-in guide
+ */
 async function getAssignedAssignmentsBySelf(req, res) {
   try {
-    const user = await User.findById(req.user._id);
-    const assignments = await Assignment.find({ createdBy: user._id }).populate(
-      "createdBy",
-      "name email",
+    const guideId = req.user._id;
+
+    // Verify user is a guide
+    const user = await User.findById(guideId);
+    if (!user || !user.roles.includes("Guide")) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Only guides can access this" });
+    }
+
+    // Get all assignments created by this guide
+    const assignments = await Assignment.find({ createdBy: guideId })
+      .populate("createdBy", "personalDetails email programDetails")
+      .populate("assignedTo", "personalDetails email programDetails")
+      .sort({ createdAt: -1 });
+
+    // Get submission statistics for each assignment
+    const assignmentsWithStats = await Promise.all(
+      assignments.map(async (assignment) => {
+        // Count total submissions
+        const totalSubmissions = await Submission.countDocuments({
+          assignment: assignment._id,
+          status: { $in: ["submitted", "graded"] },
+        });
+
+        // Count graded submissions
+        const gradedSubmissions = await Submission.countDocuments({
+          assignment: assignment._id,
+          status: "graded",
+        });
+
+        // Get total students who should submit
+        let totalStudents;
+        if (assignment.assignedTo && assignment.assignedTo.length > 0) {
+          totalStudents = assignment.assignedTo.length;
+        } else {
+          // Assignment is for all students of this guide
+          totalStudents = await User.countDocuments({
+            "programDetails.guideId": guideId,
+            roles: "Student",
+          });
+        }
+
+        return {
+          ...assignment.toObject(),
+          stats: {
+            totalStudents,
+            totalSubmissions,
+            gradedSubmissions,
+            pendingSubmissions: totalStudents - totalSubmissions,
+            pendingGrading: totalSubmissions - gradedSubmissions,
+          },
+        };
+      })
     );
 
-    return res.json({ success: true, data: assignments });
+    return res.json({
+      success: true,
+      data: assignmentsWithStats,
+      count: assignmentsWithStats.length
+    });
   } catch (err) {
+    console.error("Error fetching guide assignments:", err);
     return res.status(500).json({ success: false, message: err.message });
   }
 }
 
+/**
+ * Get assignment by ID
+ * Accessible by guides, students, faculty coordinators, and admins
+ */
 async function getAssignmentById(req, res) {
   try {
-    const assignment = await Assignment.findById(req.params.id).populate(
-      "createdBy",
-      "name email",
-    );
-    if (!assignment)
+    const assignmentId = req.params.id;
+    const userId = req.user._id;
+    const userRoles = req.user.roles;
+
+    const assignment = await Assignment.findById(assignmentId)
+      .populate("createdBy", "personalDetails email programDetails")
+      .populate("assignedTo", "personalDetails email");
+
+    if (!assignment) {
       return res
         .status(404)
         .json({ success: false, message: "Assignment not found" });
+    }
+
+    // Authorization checks
+    if (userRoles.includes("Student")) {
+      // Student can only see if it's from their guide
+      const student = await User.findById(userId);
+      if (
+        assignment.createdBy._id.toString() !==
+        student.programDetails?.guideId?.toString()
+      ) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied" });
+      }
+
+      // Check if student has submitted
+      const submission = await Submission.findOne({
+        assignment: assignmentId,
+        student: userId,
+      });
+
+      return res.json({
+        success: true,
+        data: {
+          ...assignment.toObject(),
+          submissionStatus: submission ? submission.status : "not_submitted",
+          submission: submission || null,
+        },
+      });
+    } else if (userRoles.includes("Guide")) {
+      // Guide can only see their own assignments
+      if (assignment.createdBy._id.toString() !== userId.toString()) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied" });
+      }
+
+      // Get submission count
+      const submissionCount = await Submission.countDocuments({
+        assignment: assignmentId,
+      });
+
+      return res.json({
+        success: true,
+        data: {
+          ...assignment.toObject(),
+          submissionCount,
+        },
+      });
+    } else if (
+      userRoles.includes("FacultyCoordinator") ||
+      userRoles.includes("Admin")
+    ) {
+      // Faculty and Admin can see all assignments in their scope
+      return res.json({ success: true, data: assignment });
+    }
 
     res.json({ success: true, data: assignment });
   } catch (err) {
+    console.error("Error fetching assignment:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 }
 
+/**
+ * Submit assignment (Student only)
+ * Student submits their work for an assignment
+ */
 async function submitAssignment(req, res) {
   try {
     const { assignmentId, comments } = req.body;
+    const studentId = req.user._id;
+
+    // Verify user is a student
+    const student = await User.findById(studentId);
+    if (!student || !student.roles.includes("Student")) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Only students can submit assignments" });
+    }
 
     // Check if assignment exists
-    const assignment = await Assignment.findById(assignmentId);
+    const assignment = await Assignment.findById(assignmentId).populate("createdBy");
     if (!assignment) {
-      return res.status(404).json({ success: false, message: "Assignment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
+    }
+
+    // Verify assignment is from student's guide
+    if (
+      assignment.createdBy._id.toString() !==
+      student.programDetails?.guideId?.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only submit assignments from your assigned guide",
+      });
     }
 
     // Check if already submitted
     const existing = await Submission.findOne({
       assignment: assignmentId,
-      student: req.user._id,
+      student: studentId,
     });
     if (existing) {
-      return res.status(400).json({ success: false, message: "Already submitted" });
+      return res.status(400).json({
+        success: false,
+        message: "Assignment already submitted. Use resubmit if you need to update.",
+      });
     }
 
     // Handle file attachments
@@ -119,82 +343,218 @@ async function submitAssignment(req, res) {
       });
     }
 
+    // Determine if submission is late
+    const isLate = new Date() > new Date(assignment.deadline);
+
+    // Create submission
     const submission = await Submission.create({
       assignment: assignmentId,
-      student: req.user._id,
-      status: "submitted",
+      student: studentId,
+      status: isLate ? "late" : "submitted",
       comments: comments || "",
       attachments,
       submittedAt: new Date(),
     });
 
-    // Populate student details for response
-    await submission.populate("student", "personalDetails email");
-    await submission.populate("assignment", "title description deadline");
+    // Populate related data
+    await submission.populate("student", "personalDetails email programDetails");
+    await submission.populate("assignment", "title description deadline createdBy");
+    await submission.populate({
+      path: "assignment",
+      populate: {
+        path: "createdBy",
+        select: "personalDetails email",
+      },
+    });
 
-    res.status(201).json({ success: true, data: submission, message: "Assignment submitted successfully" });
+    res.status(201).json({
+      success: true,
+      data: submission,
+      message: isLate
+        ? "Assignment submitted successfully (late submission)"
+        : "Assignment submitted successfully",
+    });
   } catch (err) {
     console.error("Error submitting assignment:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 }
 
+/**
+ * Grade submission (Guide only)
+ * Guide grades a student's submission
+ */
 async function gradeSubmission(req, res) {
   try {
-    const { submissionId, grade, comments } = req.body;
+    const { submissionId, grade, comments, feedback } = req.body;
+    const guideId = req.user._id;
 
-    const submission = await Submission.findByIdAndUpdate(
-      submissionId,
-      { grade, comments, status: "graded" },
-      { new: true },
-    );
+    // Find submission and verify it belongs to guide's assignment
+    const submission = await Submission.findById(submissionId)
+      .populate("assignment")
+      .populate("student", "personalDetails email");
 
-    if (!submission)
+    if (!submission) {
       return res
         .status(404)
         .json({ success: false, message: "Submission not found" });
+    }
 
-    res.json({ success: true, data: submission });
+    // Verify assignment was created by this guide
+    if (submission.assignment.createdBy.toString() !== guideId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only grade submissions for your own assignments",
+      });
+    }
+
+    // Update submission
+    submission.grade = grade;
+    submission.comments = comments || submission.comments;
+    submission.feedback = feedback || "";
+    submission.status = "graded";
+    submission.gradedAt = new Date();
+    submission.gradedBy = guideId;
+
+    await submission.save();
+
+    // Populate guide info
+    await submission.populate("gradedBy", "personalDetails email");
+
+    res.json({
+      success: true,
+      data: submission,
+      message: "Submission graded successfully",
+    });
   } catch (err) {
+    console.error("Error grading submission:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 }
 
+/**
+ * Get submissions for an assignment (Guide/Faculty/Admin)
+ * Returns all submissions for a specific assignment
+ */
 async function getSubmissionsForAssignment(req, res) {
   try {
-    const submissions = await Submission.find({
-      assignment: req.params.id,
-    }).populate("student", "name email");
+    const assignmentId = req.params.id;
+    const userId = req.user._id;
+    const userRoles = req.user.roles;
 
-    res.json({ success: true, data: submissions });
+    // Find assignment
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
+    }
+
+    // Authorization: only guide who created it, faculty in same dept, or admin
+    if (userRoles.includes("Guide")) {
+      if (assignment.createdBy.toString() !== userId.toString()) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied" });
+      }
+    } else if (userRoles.includes("FacultyCoordinator")) {
+      const faculty = await User.findById(userId);
+      if (assignment.department !== faculty.programDetails?.department) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied" });
+      }
+    } else if (!userRoles.includes("Admin")) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Access denied" });
+    }
+
+    // Get all submissions
+    const submissions = await Submission.find({ assignment: assignmentId })
+      .populate("student", "personalDetails email programDetails")
+      .populate("gradedBy", "personalDetails email")
+      .sort({ submittedAt: -1 });
+
+    res.json({
+      success: true,
+      data: submissions,
+      count: submissions.length,
+    });
   } catch (err) {
+    console.error("Error fetching submissions:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 }
 
+/**
+ * Get list of students who haven't submitted (Guide only)
+ * Returns students assigned to the guide who haven't submitted
+ */
 async function getListOfNonSubmissions(req, res) {
   try {
     const assignmentId = req.params.id;
+    const guideId = req.user._id;
 
-    const user = await User.findById(req.user._id);
+    // Verify assignment belongs to this guide
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
+    }
 
+    if (assignment.createdBy.toString() !== guideId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only view submissions for your own assignments",
+      });
+    }
+
+    // Get all students assigned to this guide
     const allStudents = await User.find({
       roles: "Student",
-      guideId: req.user._id,
-    }).select("_id personalDetails.firstName personalDetails.lastName email");
+      "programDetails.guideId": guideId,
+    }).select("_id personalDetails email programDetails");
 
+    // If assignment is specifically assigned, filter those students
+    let targetStudents = allStudents;
+    if (assignment.assignedTo && assignment.assignedTo.length > 0) {
+      const assignedIds = assignment.assignedTo.map((id) => id.toString());
+      targetStudents = allStudents.filter((s) =>
+        assignedIds.includes(s._id.toString())
+      );
+    }
+
+    // Get students who have submitted
     const submitted = await Submission.find({
       assignment: assignmentId,
     }).select("student");
 
     const submittedIds = submitted.map((s) => s.student.toString());
 
-    const nonSubmitted = allStudents.filter(
-      (s) => !submittedIds.includes(s._id.toString()),
+    // Filter out students who have submitted
+    const nonSubmitted = targetStudents.filter(
+      (s) => !submittedIds.includes(s._id.toString())
     );
 
-    res.json({ success: true, data: nonSubmitted });
+    // Format response
+    const formattedNonSubmitted = nonSubmitted.map((student) => ({
+      _id: student._id,
+      name: `${student.personalDetails?.firstName || ""} ${student.personalDetails?.lastName || ""}`.trim(),
+      email: student.email,
+      rollNumber: student.programDetails?.rollNumber || "N/A",
+      department: student.programDetails?.department || "N/A",
+    }));
+
+    res.json({
+      success: true,
+      data: formattedNonSubmitted,
+      count: formattedNonSubmitted.length,
+      totalStudents: targetStudents.length,
+    });
   } catch (err) {
+    console.error("Error fetching non-submissions:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 }
