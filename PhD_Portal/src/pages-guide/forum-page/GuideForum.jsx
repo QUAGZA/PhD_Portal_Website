@@ -5,15 +5,18 @@ import { SendHorizonal } from "lucide-react";
 import clsx from "clsx";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:9999"); // or your deployed endpoint
+// Temporary feature flag to disable forum (and socket connection) while on hold
+const ENABLE_FORUM = false;
 const mySocketId = crypto.randomUUID(); // unique per tab
 
 export default function GuideForum() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);
+  const socketRef = useRef(null);
 
   const handleSend = () => {
+    if (!ENABLE_FORUM) return;
     if (!input.trim()) return;
 
     const message = {
@@ -24,18 +27,22 @@ export default function GuideForum() {
     };
 
     setMessages((prev) => [...prev, { ...message, fromSelf: true }]);
-    socket.emit("chatMessage", message);
+    socketRef.current?.emit("chatMessage", message);
     setInput("");
   };
 
   useEffect(() => {
-    socket.on("chatMessage", (msg) => {
+    if (!ENABLE_FORUM) return undefined;
+
+    socketRef.current = io("http://localhost:9999");
+
+    socketRef.current.on("chatMessage", (msg) => {
       if (msg.senderId !== mySocketId) {
         setMessages((prev) => [...prev, { ...msg, fromSelf: false }]);
       }
     });
 
-    socket.on("chatHistory", (history) => {
+    socketRef.current.on("chatHistory", (history) => {
       const processed = history.map((msg) => ({
         ...msg,
         fromSelf: msg.senderId === mySocketId,
@@ -43,7 +50,7 @@ export default function GuideForum() {
       setMessages(processed);
     });
 
-    return () => socket.disconnect();
+    return () => socketRef.current?.disconnect();
   }, []);
 
   useEffect(() => {
@@ -60,6 +67,14 @@ export default function GuideForum() {
   };
 
   return (
+    !ENABLE_FORUM ? (
+      <div className="p-6">
+        <h2 className="text-lg font-semibold mb-2">Forum (Temporarily Disabled)</h2>
+        <p className="text-sm text-gray-600">
+          The forum feature is currently on hold. Socket connections have been disabled.
+        </p>
+      </div>
+    ) : (
     <div className="flex flex-col h-[calc(100vh-64px)] max-h-[85vh] px-4 py-2">
       <h2 className="text-lg font-semibold mb-2">My Classroom</h2>
 
@@ -110,5 +125,6 @@ export default function GuideForum() {
         </Button>
       </div>
     </div>
+    )
   );
 }
