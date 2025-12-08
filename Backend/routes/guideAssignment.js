@@ -14,6 +14,8 @@ const {
 } = require("../Controller/GuideAssignmentController");
 const isLoggedIn = require("../middlewares/OAuth2IsLoggedIn");
 const authorizedRoles = require("../middlewares/roleAuthenticator");
+const { validateBody, validateParams, validateQuery } = require("../middlewares/validateRequest");
+const { guideAssignmentSchemas, studentIdParamSchema, guideIdParamSchema, paginationSchema } = require("../middlewares/validation");
 
 // Apply authentication middleware for all routes
 router.use(isLoggedIn);
@@ -22,21 +24,26 @@ router.use(isLoggedIn);
 router.post(
   "/assign",
   authorizedRoles("Admin", "FacultyCoordinator"),
+  validateBody(guideAssignmentSchemas.assign),
   assignGuide,
 );
 router.delete(
   "/unassign/:studentId",
   authorizedRoles("Admin", "FacultyCoordinator"),
+  validateParams(studentIdParamSchema),
   unassignGuide,
 );
 router.put(
   "/change/:studentId",
   authorizedRoles("Admin", "FacultyCoordinator"),
+  validateParams(studentIdParamSchema),
+  validateBody(guideAssignmentSchemas.changeGuide),
   changeGuide,
 );
 router.get(
   "/students",
   authorizedRoles("Admin", "FacultyCoordinator"),
+  validateQuery(paginationSchema),
   getAllStudentsWithGuideStatus,
 );
 router.get(
@@ -45,20 +52,22 @@ router.get(
   getAssignmentStats,
 );
 
-// Routes for getting guides and students (accessible by Admin, FacultyCoordinator and Guide)
+// Routes for getting guides and students (accessible by Admin, FacultyCoordinator, Guide, and Student)
 router.get(
   "/guides",
-  authorizedRoles("Admin", "FacultyCoordinator", "Guide"),
+  authorizedRoles("Admin", "FacultyCoordinator", "Guide", "Student"),
   getGuides,
 );
 router.get(
   "/guide/:guideId/students",
   authorizedRoles("Admin", "FacultyCoordinator", "Guide"),
+  validateParams(guideIdParamSchema),
   getStudentsForGuide,
 );
 router.get(
   "/student/:studentId/guide",
   authorizedRoles("Admin", "FacultyCoordinator", "Guide"),
+  validateParams(studentIdParamSchema),
   getGuideForSpecificStudent,
 );
 

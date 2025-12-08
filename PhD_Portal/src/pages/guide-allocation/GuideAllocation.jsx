@@ -19,6 +19,7 @@ import {
   FileText,
   CheckCircle2,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 import {
   Dialog,
@@ -58,26 +59,10 @@ const GuideAllocation = () => {
     useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Mock guides data - replace with API call in production
-  const guides = [
-    { 
-      id: "g1", 
-      title: "Dr.", 
-      name: "ABC DEF", 
-      researchAreas: ["AI", "ML"] },
-    {
-      id: "g2",
-      title: "Dr.",
-      name: "GHI JKL",
-      researchAreas: ["Data Science", "Networking"],
-    },
-    {
-      id: "g3",
-      title: "Dr.",
-      name: "MNO PQR",
-      researchAreas: ["Cybersecurity", "Cloud Computing"],
-    },
-  ];
+  // State for guides from API
+  const [guides, setGuides] = useState([]);
+  const [loadingGuides, setLoadingGuides] = useState(true);
+  const [guidesError, setGuidesError] = useState("");
 
   const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -86,6 +71,41 @@ const GuideAllocation = () => {
   // Sample PDF URL - in production this would be your actual guide list PDF
   const guidePdfUrl =
     "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+
+  // Fetch guides from API on component mount
+  useEffect(() => {
+    fetchGuides();
+  }, []);
+
+  const fetchGuides = async () => {
+    try {
+      setLoadingGuides(true);
+      setGuidesError("");
+      const response = await userService.getAllGuides();
+      
+      // Transform API response to match expected format
+      const guidesData = response.data?.guides || [];
+      const formattedGuides = guidesData.map((guide) => ({
+        id: guide._id,
+        title: guide.personalDetails?.title || "Dr.",
+        name: `${guide.personalDetails?.firstName || ""} ${guide.personalDetails?.lastName || ""}`.trim() || guide.email,
+        email: guide.email,
+        department: guide.programDetails?.department || "",
+        researchAreas: guide.programDetails?.specialization 
+          ? [guide.programDetails.specialization] 
+          : ["Research"],
+      }));
+      
+      setGuides(formattedGuides);
+    } catch (error) {
+      console.error("Error fetching guides:", error);
+      setGuidesError("Failed to load guides. Please try again later.");
+      // Fallback to empty array
+      setGuides([]);
+    } finally {
+      setLoadingGuides(false);
+    }
+  };
 
   const handlePreferenceChange = (preferenceKey, field, value) => {
     setPreferences((prev) => ({
@@ -251,11 +271,59 @@ const GuideAllocation = () => {
     setIsPreferencesPdfViewerOpen(true);
   };
 
+  // Render guide select options
+  const renderGuideOptions = () => {
+    if (loadingGuides) {
+      return (
+        <SelectItem value="loading" disabled>
+          Loading guides...
+        </SelectItem>
+      );
+    }
+    
+    if (guidesError) {
+      return (
+        <SelectItem value="error" disabled>
+          Error loading guides
+        </SelectItem>
+      );
+    }
+    
+    if (guides.length === 0) {
+      return (
+        <SelectItem value="none" disabled>
+          No guides available
+        </SelectItem>
+      );
+    }
+    
+    return guides.map((guide) => (
+      <SelectItem key={guide.id} value={guide.id}>
+        {guide.title} {guide.name}
+      </SelectItem>
+    ));
+  };
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
         Guide Allocation
       </h1>
+
+      {/* Error message for guides loading */}
+      {guidesError && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded flex items-center justify-between">
+          <span>{guidesError}</span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={fetchGuides}
+            className="ml-4"
+          >
+            Retry
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left side - Preference Selection */}
@@ -285,16 +353,13 @@ const GuideAllocation = () => {
                       onValueChange={(value) =>
                         handlePreferenceChange("preference1", "guideId", value)
                       }
+                      disabled={loadingGuides || guides.length === 0}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select Guide" />
+                        <SelectValue placeholder={loadingGuides ? "Loading..." : "Select Guide"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {guides.map((guide) => (
-                          <SelectItem key={guide.id} value={guide.id}>
-                            {guide.title} {guide.name}
-                          </SelectItem>
-                        ))}
+                        {renderGuideOptions()}
                       </SelectContent>
                     </Select>
                   </div>
@@ -333,16 +398,13 @@ const GuideAllocation = () => {
                       onValueChange={(value) =>
                         handlePreferenceChange("preference2", "guideId", value)
                       }
+                      disabled={loadingGuides || guides.length === 0}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select Guide" />
+                        <SelectValue placeholder={loadingGuides ? "Loading..." : "Select Guide"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {guides.map((guide) => (
-                          <SelectItem key={guide.id} value={guide.id}>
-                            {guide.title} {guide.name}
-                          </SelectItem>
-                        ))}
+                        {renderGuideOptions()}
                       </SelectContent>
                     </Select>
                   </div>
@@ -381,16 +443,13 @@ const GuideAllocation = () => {
                       onValueChange={(value) =>
                         handlePreferenceChange("preference3", "guideId", value)
                       }
+                      disabled={loadingGuides || guides.length === 0}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select Guide" />
+                        <SelectValue placeholder={loadingGuides ? "Loading..." : "Select Guide"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {guides.map((guide) => (
-                          <SelectItem key={guide.id} value={guide.id}>
-                            {guide.title} {guide.name}
-                          </SelectItem>
-                        ))}
+                        {renderGuideOptions()}
                       </SelectContent>
                     </Select>
                   </div>
@@ -412,7 +471,7 @@ const GuideAllocation = () => {
               <Button
                 type="submit"
                 className="w-full bg-[#B7202E] hover:bg-[#9a1c27] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                disabled={!isFormValid() || formSubmitted}
+                disabled={!isFormValid() || formSubmitted || loadingGuides}
               >
                 {formSubmitted ? "Submitted ✓" : "Submit Preferences"}
               </Button>

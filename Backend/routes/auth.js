@@ -1,10 +1,13 @@
 const express = require("express");
 const passport = require("passport");
 const User = require("../Model/User");
+const config = require("../config/config");
+const { validateBody } = require("../middlewares/validateRequest");
+const { authSchemas } = require("../middlewares/validation");
 const router = express.Router();
 
 // Local login
-router.post("/login", (req, res, next) => {
+router.post("/login", validateBody(authSchemas.login), (req, res, next) => {
   console.log("=== Login Request Received ===");
   console.log("Request body:", { email: req.body.email, hasPassword: !!req.body.password });
 
@@ -49,7 +52,7 @@ router.post("/login", (req, res, next) => {
 });
 
 // Local registration
-router.post("/register", async (req, res) => {
+router.post("/register", validateBody(authSchemas.register), async (req, res) => {
   try {
     const { email, password, roles } = req.body;
 
@@ -200,26 +203,13 @@ router.get("/success", (req, res) => {
   const needsRegistration = !req.user.registrationComplete;
 
   if (needsRegistration) {
-    return res.redirect("http://localhost:5173/register");
+    return res.redirect(config.getFrontendUrl(config.frontend.registerPath));
   }
 
   // Redirect based on user's primary role (first role in the array)
   const primaryRole =
     req.user.roles && req.user.roles.length > 0 ? req.user.roles[0] : "Student";
-  const redirectPath = (() => {
-    switch (primaryRole) {
-      case "Student":
-        return "http://localhost:5173/student/dashboard";
-      case "Guide":
-        return "http://localhost:5173/guide/dashboard";
-      case "FacultyCoordinator":
-        return "http://localhost:5173/faculty-coordinator/dashboard";
-      case "Admin":
-        return "http://localhost:5173/admin/dashboard";
-      default:
-        return "http://localhost:5173/student/dashboard";
-    }
-  })();
+  const redirectPath = config.getDashboardUrl(primaryRole);
 
   res.redirect(redirectPath);
 });

@@ -13,6 +13,10 @@ export const userService = {
   getUserProfile: () => api.get("/auth/profile"),
   updateUserProfile: (data) => api.put("/auth/profile", data),
 
+  // Guide related
+  getAllGuides: () => api.get("/guide-assignment/guides"),
+  getMyGuide: () => api.get("/guide-assignment/my-guide"),
+
   // Guide preferences
   submitGuidePreferences: (preferences) =>
     api.post("/guide-preferences/submit", { preferences }),

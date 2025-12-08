@@ -2,10 +2,11 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const path = require("path");
+const config = require("./config/config");
 const { connectMongoDB } = require("./utility/connection");
 const { jsonParser } = require("./middlewares/index");
+const { errorHandler, notFoundHandler } = require("./middlewares/errorHandler");
 require("./config/passport");
 const migrateRolesToArray = require("./migrations/migrateRolesToArray");
 const migrateGuideAssignments = require("./migrations/migrateGuideAssignments");
@@ -23,20 +24,20 @@ const facultyDashboardRoutes = require("./routes/facultyDashboard");
 const scheduleRoutes = require("./routes/schedule");
 const announcementRoutes = require("./routes/announcements");
 
-dotenv.config();
-const app = express();
-const PORT = process.env.PORT || 9999;
+// Validate environment configuration
+config.validate();
 
-const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/PhDPortal";
+const app = express();
+const PORT = config.server.port;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: config.cors.origin,
+    credentials: config.cors.credentials,
   }),
 );
 
-connectMongoDB(mongoURI)
+connectMongoDB(config.database.mongoUri)
   .then(() => {
     console.log("MongoDB Connected!!");
     // // Run migration to update user roles from string to array
@@ -56,13 +57,13 @@ app.use(jsonParser());
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "your-session-secret",
+    secret: config.session.secret,
     resave: false,
     saveUninitialized: false, // Changed to false for better security
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      maxAge: config.session.maxAge,
       httpOnly: true,
-      secure: false, // Set to false for development (localhost)
+      secure: config.session.secure,
       sameSite: 'lax' // Changed from undefined to 'lax' for better CORS support
     },
   }),
@@ -72,7 +73,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Serve static files from uploads directory
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, config.upload.uploadDir)));
 
 app.use("/auth", authRoutes);
 app.use("/registration", registrationRoutes);
@@ -108,4 +109,10 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.listen(PORT, () => console.log("Server has been started on Port :" + PORT));
+// Handle 404 routes
+app.use(notFoundHandler);
+
+// Global error handler - must be last
+app.use(errorHandler);
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT} in ${config.server.nodeEnv} mode`));

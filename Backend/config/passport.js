@@ -1,10 +1,8 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const LocalStrategy = require("passport-local").Strategy;
-require("dotenv").config();
+const config = require("./config");
 const User = require("../Model/User");
-const clientID = process.env.GOOGLE_CLIENT_ID;
-const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 // Local Strategy for username/password authentication
 passport.use(
@@ -52,9 +50,9 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID,
-      clientSecret,
-      callbackURL: "http://localhost:9999/auth/google/callback",
+      clientID: config.google.clientId,
+      clientSecret: config.google.clientSecret,
+      callbackURL: config.google.callbackUrl,
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log(profile);
